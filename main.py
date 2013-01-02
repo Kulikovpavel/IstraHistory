@@ -139,7 +139,6 @@ class HistoryHandler(webapp2.RequestHandler):
         else:
             self.greeting = (u"<a href=\"%s\">Войдите или зарегистрируйтесь</a>" %
                         self.login_url)
-
         self.template_values = {
             'greeting': self.greeting,
             'url': 'url',
