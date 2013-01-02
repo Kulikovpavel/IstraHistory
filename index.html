@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<!--
+/*
+ * Bootstrap Image Gallery 2.5.1
+ * https://github.com/blueimp/Bootstrap-Image-Gallery
+ *
+ * Copyright 2011, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+-->
+<html lang="en">
+<head>
+    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
+    <meta charset="utf-8">
+    <title>Истринская галерея</title>
+    <meta name="description" content="Галерея исторических фотографий Истры и окрестностей">
+    <meta name="viewport" content="width=device-width">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
+    <!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
+    <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <link rel="stylesheet" href="css/bootstrap-image-gallery.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- SLIDER-->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script>
+        $(function() {
+            $( "#slider-range" ).slider({
+                range: true,
+                min: 1900,
+                max: 2020,
+                values: [ 1950, 1970 ],
+                slide: function( event, ui ) {
+                    $( "#amount" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+                }
+            });
+            $( "#amount" ).val( $( "#slider-range" ).slider( "values", 0 ) +
+                    " - " + $( "#slider-range" ).slider( "values", 1 ) );
+        });
+    </script>
+    <!-- TAGS-->
+    <script src="js/tag-it.min.js"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
+    <link rel="stylesheet" href="css/jquery.tagit.css" >
+    <script>
+        $(document).ready(function() {
+            $('#myTags').tagit({
+//                availableTags: {{sampleTags}}
+                allowSpaces: true
+            })
+        });
+    </script>
+</head>
+<body>
+<div class="navbar navbar-fixed-top navbar-inverse">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+
+            <a class="brand" href="/">Главная</a>
+            <ul class="nav">
+                <li><a href="load">Загрузить фотографию</a></li>
+                {% if user=='' %}
+                    <li><a href="#modal-login" data-toggle="modal">Войти</a><li>
+                {% else %}
+                    <li>{{greeting}}</li>
+                {% endif %}
+            </ul>
+
+
+        </div>
+    </div>
+</div>
+
+{% block body %}
+
+<div class="container-fluid">
+    <header>
+       
+        <h1>Истринская галерея</h1>
+        <blockquote>
+            <p>Тот, кто не помнит прошлого, обречен совершать ошибки в будущем</p>
+        </blockquote>
+        
+        <p>
+            <button id="start-slideshow" class="btn btn-large btn-success" data-slideshow="5000" data-target="#modal-gallery" data-selector="#gallery a[rel=gallery]">Запустить слайдшоу</button>
+            <button id="toggle-fullscreen" class="btn btn-large btn-primary" data-toggle="button">Полный экран</button>
+        </p>
+    </header>
+    <div class="row-fluid">
+        <div class="span10">
+
+            <div id="gallery" data-toggle="modal-gallery" data-target="#modal-gallery">
+                {%for picture in pictures%}
+                <a rel="gallery" href="{{picture.link}}" title="{{picture.title}}" ><img src="{{picture.thumb}}"></a>
+                {% endfor %}
+            </div>
+            <br>
+        </div>
+        <div class='span2'>
+            <input type="text" id="amount" style="border: 0; color: #0084f6; font-weight: bold;" />
+            <div id="slider-range"></div>
+        </div>
+
+</div>
+<!-- modal-gallery is the modal dialog used for the image gallery -->
+<div id="modal-gallery" class="modal modal-gallery hide fade" tabindex="-1">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">&times;</a>
+        <h3 class="modal-title"></h3>
+    </div>
+    <div class="modal-body"><div class="modal-image"></div></div>
+    <div class="modal-footer">
+        <a class="btn modal-download" target="_blank">
+            <i class="icon-download"></i>
+            <span>Загрузить</span>
+        </a>
+        <a class="btn btn-success modal-play modal-slideshow" data-slideshow="5000">
+            <i class="icon-play icon-white"></i>
+            <span>Слайдшоу</span>
+        </a>
+        <a class="btn btn-info modal-prev">
+            <i class="icon-arrow-left icon-white"></i>
+            <span>Назад</span>
+        </a>
+        <a class="btn btn-primary modal-next">
+            <span>Вперед</span>
+            <i class="icon-arrow-right icon-white"></i>
+        </a>
+    </div>
+</div>
+<div id ='modal-login' class ='modal hide fade modal'>
+    <form action = '{{login_url}}' method="POST">
+        <div class="modal-header">
+            <!-- <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
+            <h3>Войти на сайт</h3>
+        </div>
+        <div class="modal-body">
+            <input type="email" name="email" placeholder='example@mail.ru' required="required">
+            <br>
+            <input type='password' name='password' placeholder='Ваш пароль' required="required">
+        </div>
+        <div class="modal-footer">
+            <button type='submit' class="btn btn-primary">Войти</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Закрыть</button>
+            <button id='button-register' class='btn' data-dismiss='modal'>Регистрация</button>
+        </div>
+
+    </form>
+</div>
+<div id ='modal-register' class ='modal hide fade'>
+    <form action = '{{register_url}}' method="POST">
+        <div class="modal-header">
+            <!-- <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
+            <h3 >Зарегистрироваться на сайте</h3>
+        </div>
+        <div class="modal-body">
+            <input type='text' name='username' placeholder='Иван Иванов' required="required">
+            <br>
+            <input type="email" name="email" placeholder='example@mail.ru' required="required">
+            <br>
+            <input type='password' name='password' placeholder='Ваш пароль' required="required">
+        </div>
+        <div class="modal-footer">
+            <button type='submit' class="btn btn-primary">Зарегистрироваться</button>
+            <button class="btn" data-dismiss="modal">Закрыть</button>
+
+        </div>
+
+    </form>
+</div>
+
+
+
+
+{% endblock %}
+</body>
+
+
+<script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
+<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
+<script src="js/bootstrap-image-gallery.min.js"></script>
+<script src="js/main.js"></script>
+
+
+
+<script>
+    $('#modal-login').on('shown', function () {
+        $('input:visible:first', this).focus();
+    });
+    $('#modal-register').on('shown', function () {
+        $('input:visible:first', this).focus();
+    });
+</script>
+
+<script>
+    $('#button-register').on('click', function () {
+        $('#modal-register').modal('toggle');
+    });
+</script>
+
+
+</html>

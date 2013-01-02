@@ -1,0 +1,55 @@
+{% extends "index.html" %}
+{% block body %}
+    <div class="container">
+        {% if not msg == '' %}
+            <div class='alert'>
+                {{msg}}
+                <a class="close" data-dismiss="alert">×</a>
+            </div>
+        {% endif %}
+        <br>
+        <form action = '{{login_url}}' method="POST">
+            <div>
+                <!-- <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
+                <h3>Войти на сайт</h3>
+            </div>
+            <div>
+                <input type="email" name="email" placeholder='example@mail.ru' required="required">
+                <br>
+                <input type='password' name='password' placeholder='Ваш пароль' required="required">
+            </div>
+            <div>
+                <button type='submit' class="btn btn-primary">Войти</button>
+                <a class="btn" href='/'>На главную страницу</a>
+                <button id='button-register' class='btn' data-dismiss='modal'>Регистрация</button>
+            </div>
+
+        </form>
+    </div>
+
+
+    <div id ='modal-register' class ='modal hide fade'>
+        <form action = '{{register_url}}' method="POST">
+            <div class="modal-header">
+                <!-- <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
+                <h3 >Зарегистрироваться на сайте</h3>
+            </div>
+            <div class="modal-body">
+                <input type='text' name='username' placeholder='Иван Иванов' required="required">
+                <br>
+                <input type="email" name="email" placeholder='example@mail.ru' required="required">
+                <br>
+                <input type='password' name='password' placeholder='Ваш пароль' required="required">
+            </div>
+            <div class="modal-footer">
+                <button type='submit' class="btn btn-primary">Зарегистрироваться</button>
+                <button class="btn" data-dismiss="modal">Закрыть</button>
+
+            </div>
+
+        </form>
+    </div>
+
+
+
+{% endblock %}

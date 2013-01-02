@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+{% block body %}
+    <div class="container">
+        {% if not msg == '' %}
+            <div class='alert'>
+                {{msg}}
+                <a class="close" data-dismiss="alert">×</a>
+            </div>
+        {% endif %}
+
+        <form action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
+            Загрузить фотографию: <input type="file" name="file" accept='image/*' required="required">
+            <br>
+            Год снимка: <input type="number" name="year" placeholder="1945" value="1945">
+            <br>
+            Теги, например "Истра, монастырь:
+            <input id="myTags" name="tags">
+            <br>
+            Название <input type="text" name="title" placeholder="снимок сделан на празновании победы">
+            <br>
+
+            <input class = "btn btn-info" type="submit" name="submit" value="Загрузить">
+        </form>
+    </div>
+
+
+
+{% endblock %}
