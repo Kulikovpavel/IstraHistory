@@ -1,12 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# #!/usr/bin/env python
+
 
 import webapp2
 import jinja2
 import os
 import urllib
 import imghdr
-
+import re
 import logging
 #from string import letters
 
@@ -24,7 +25,7 @@ sys.path.append('/models')
 from models import *
 
 jinja_environment = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)+"\\templates"))
+    loader=jinja2.FileSystemLoader("templates"))
 
 upload_url = blobstore.create_upload_url('/upload')
 
@@ -70,7 +71,7 @@ class HistoryHandler(webapp2.RequestHandler):
         self.user = uid and User.by_id(int(uid))
 
         if self.user:
-            self.greeting = (u"<p>Добро пожаловать, <a href='userpage'>%s</a>! <a href=\"%s\">выйти</a>)</p>" %
+            self.greeting = (u"<span>Добро пожаловать, <a href='userpage'>%s</a>! (<a href=\"%s\">выйти</a>)</span>" %
                         (self.user.name, self.logout_url))
 
         else:
@@ -103,6 +104,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
         if upload_files and self.user:
             blob_info = upload_files[0]
             key = blob_info.key()
+#            print tags
             picture = Picture(blob_key = key ,
                               link = images.get_serving_url(key, size = 0),
                               thumb = images.get_serving_url(key, size = 75),
@@ -208,19 +210,16 @@ class MainPage(HistoryHandler):
 
         self.template_values['tags'] = tags_data
         self.template_values['tags_list'] = [x.title for x in tags_data]
-        print self.template_values
         template = jinja_environment.get_template('index.html')
         self.response.out.write(template.render(self.template_values))
     
 class UserPage(HistoryHandler):
     def get(self):
         if self.user:
-            template_values = {
-                'pictures': self.user.pictures,
-            
-            }
+            template_values = {}
+            self.template_values['pictures'] = self.user.pictures
             template = jinja_environment.get_template('userpage.html')
-            self.response.out.write(template.render(template_values))
+            self.response.out.write(template.render(self.template_values))
         else:
             self.redirect('/login')
 
@@ -231,8 +230,8 @@ class LoadPage(HistoryHandler):
 
 
             tags_data = Tag.all().order('-count')
-            self.template_values['tags_list'] = [str(x.title) for x in tags_data]
-
+            self.template_values['tags_list'] = ("["+''.join(["'"+x.title+"'," for x in tags_data])+"]").replace('\\','')
+#            self.template_values['tags_list'] = list(x.title for x in tags_data)
             msg = self.request.get("msg")
             template = jinja_environment.get_template('upload.html')
             self.template_values['msg'] = msg
