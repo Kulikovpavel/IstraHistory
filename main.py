@@ -230,7 +230,8 @@ class LoadPage(HistoryHandler):
 
 
             tags_data = Tag.all().order('-count')
-            self.template_values['tags_list'] = ("["+''.join(["'"+x.title+"'," for x in tags_data])+"]").replace('\\','')
+
+            self.template_values['tags_list'] = ("["+''.join(["'"+x.title+"'," for x in tags_data if x.title])+"]").replace('\\','')
 #            self.template_values['tags_list'] = list(x.title for x in tags_data)
             msg = self.request.get("msg")
             template = jinja_environment.get_template('upload.html')
