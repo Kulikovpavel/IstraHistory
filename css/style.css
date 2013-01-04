@@ -30,4 +30,8 @@ header a {
     color: #333;
 }
 
-/*.navbar .nav>li>text{float:none;padding:10px 15px 10px;}*/
+html { background: transparent }
+
+ul.tagit {
+    margin-left: 0px; /* usually we don't want the regular ul margins. */
+}

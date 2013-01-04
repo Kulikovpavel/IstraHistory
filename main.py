@@ -5,11 +5,12 @@ import webapp2
 import jinja2
 import os
 import urllib
-import hashlib
-import hmac
-import random
+import imghdr
+
 import logging
-from string import letters
+#from string import letters
+
+from helpers import *
 
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
@@ -22,37 +23,10 @@ import sys # models import
 sys.path.append('/models')
 from models import *
 
-logging.log(1,__file__)
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)+"\\templates"))
 
-#    loader=jinja2.PackageLoader('main', 'templates'))
-
-
-##### user stuff
-def make_salt(length = 5):
-    return ''.join(random.choice(letters) for x in xrange(length))
-
-def make_pw_hash(email, pw, salt = None):
-    if not salt:
-        salt = make_salt()
-    h = hashlib.sha256(email + pw + salt).hexdigest()
-    return '%s,%s' % (salt, h)
-
-def valid_pw(email, password, h):
-    salt = h.split(',')[0]
-    return h == make_pw_hash(email, password, salt)
-
-def users_key(group = 'default'):
-    return db.Key.from_path('users', group)
-### cookies
-def make_secure_val(val):
-    return '%s|%s' % (val, hmac.new(secret, val).hexdigest())
-
-def check_secure_val(secure_val):
-    val = secure_val.split('|')[0]
-    if secure_val == make_secure_val(val):
-        return val
+upload_url = blobstore.create_upload_url('/upload')
 
 class HistoryHandler(webapp2.RequestHandler):
     def tags_update(self, tags):
@@ -62,14 +36,14 @@ class HistoryHandler(webapp2.RequestHandler):
             memcache.add('tags_all', tags_data, 60)
 
         for tag in tags:
-            key = db.Key.from_path('Tag', tag)
-            tag_in_db = db.get(key)
-            if tag_in_db:
-                tag_in_db.count += 1
-                tag_in_db.put()
-            else:
-                tag_in_db = Tag(key_name = tag, count = 1)
-                tag_in_db.put()
+            if tag:
+                tag_in_db = Tag.all().filter('title = ', tag).get()
+                if tag_in_db:
+                    tag_in_db.count += 1
+                    tag_in_db.put()
+                else:
+                    tag_in_db = Tag(title = tag, count = 1)
+                    tag_in_db.put()
     def set_secure_cookie(self, name, val):
         cookie_val = make_secure_val(val)
         self.response.headers.add_header(
@@ -90,10 +64,11 @@ class HistoryHandler(webapp2.RequestHandler):
         self.register_url = '/register'
         self.login_url = '/login'
         self.logout_url = '/logout'
-        self.upload_url = blobstore.create_upload_url('/upload')
+#        self.upload_url = blobstore.create_upload_url('/upload')
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
+
         if self.user:
             self.greeting = (u"<p>Добро пожаловать, <a href='userpage'>%s</a>! <a href=\"%s\">выйти</a>)</p>" %
                         (self.user.name, self.logout_url))
@@ -105,7 +80,7 @@ class HistoryHandler(webapp2.RequestHandler):
             'greeting': self.greeting,
             'url': 'url',
             'url_linktext': 'url_linktext',
-            'upload_url': self.upload_url,
+            'upload_url': upload_url,
             'register_url': self.register_url,
             'login_url': self.login_url,
             'user': self.user,
@@ -118,16 +93,19 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
         self.user = uid and User.by_id(int(uid))
     def post(self):
         upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
+
+#        image_type = imghdr.what(upload_files[0].filename)
+#        if not image_type:
+#            self.redirect('/')
         title = self.request.get('title')
         year = int(self.request.get('year'))
         tags = list(self.request.get('tags').lower().split(','))  # теги в нижний регистр, разделяем по запятой и в лист
         if upload_files and self.user:
-            
             blob_info = upload_files[0]
             key = blob_info.key()
-            picture = Picture(blob_key = key , 
-                              link = images.get_serving_url(key),
-                              thumb = images.get_serving_url(key, size=75),
+            picture = Picture(blob_key = key ,
+                              link = images.get_serving_url(key, size = 0),
+                              thumb = images.get_serving_url(key, size = 75),
                               user = self.user,
                               title = title,
                               year = year,
@@ -200,13 +178,36 @@ class Logout(HistoryHandler):
 
 class MainPage(HistoryHandler):
     def get(self):
-        data = memcache.get('pictures_all')
-        if data is  None:
-            data = Picture.all()
-            memcache.add('pictures_all', data, 60)
+        tag_id = self.request.get('tag')
+        tag = None
+        if tag_id:
+            tag = Tag.get_by_id(int(tag_id))
+
+
+
+        if tag:
+            mem_string='picture_tag_'+str(tag_id)
+            data = memcache.get(mem_string)
+            if data is  None:
+
+                data = Picture.all().filter('tags =',tag.title)
+                memcache.add(mem_string, data, 60)
+        else:
+            data = memcache.get('pictures_all')
+            if data is  None:
+                data = Picture.all()
+                memcache.add('pictures_all', data, 60)
         
         
         self.template_values['pictures'] = data
+
+        tags_data = memcache.get('tags_all')
+        if tags_data is  None:
+            tags_data = Tag.all().order('-count')
+            memcache.add('tags_all', tags_data, 60)
+
+        self.template_values['tags'] = tags_data
+        self.template_values['tags_list'] = [x.title for x in tags_data]
         print self.template_values
         template = jinja_environment.get_template('index.html')
         self.response.out.write(template.render(self.template_values))
@@ -222,10 +223,16 @@ class UserPage(HistoryHandler):
             self.response.out.write(template.render(template_values))
         else:
             self.redirect('/login')
+
         
 class LoadPage(HistoryHandler):
     def get(self):
         if self.user:
+
+
+            tags_data = Tag.all().order('-count')
+            self.template_values['tags_list'] = [str(x.title) for x in tags_data]
+
             msg = self.request.get("msg")
             template = jinja_environment.get_template('upload.html')
             self.template_values['msg'] = msg
@@ -234,7 +241,21 @@ class LoadPage(HistoryHandler):
         else:
             self.redirect('/login')
 
-secret = 'far654654dsfsfdt'
+class PicturePage(HistoryHandler):
+    def post(self, id):
+        action = self.request.get('action')
+        id = int(urllib.unquote(id))
+        picture = Picture.get_by_id(id)
+        logging.info(picture.user)
+        logging.info(self.user)
+        if action=='delete' and picture and picture.user.key() == self.user.key():
+
+            picture.delete()
+
+        self.redirect('/userpage')
+
+
+
 
 
 app = webapp2.WSGIApplication([
@@ -246,4 +267,5 @@ app = webapp2.WSGIApplication([
     ('/login', LoginHandler),
     ('/register',RegisterHandler),
     ('/logout',Logout),
+    ('/picture/(\d+)', PicturePage)
 ], debug=True)

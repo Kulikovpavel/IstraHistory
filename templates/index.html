@@ -27,25 +27,11 @@
     <!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <link rel="stylesheet" href="css/bootstrap-image-gallery.min.css">
-    <link rel="stylesheet" href="css/style.css">
+
     <!-- SLIDER-->
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
     <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
-    <script>
-        $(function() {
-            $( "#slider-range" ).slider({
-                range: true,
-                min: 1900,
-                max: 2020,
-                values: [ 1950, 1970 ],
-                slide: function( event, ui ) {
-                    $( "#amount" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
-                }
-            });
-            $( "#amount" ).val( $( "#slider-range" ).slider( "values", 0 ) +
-                    " - " + $( "#slider-range" ).slider( "values", 1 ) );
-        });
-    </script>
+
     <!-- TAGS-->
     <script src="js/tag-it.min.js"></script>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
@@ -53,32 +39,16 @@
     <script>
         $(document).ready(function() {
             $('#myTags').tagit({
-//                availableTags: {{sampleTags}}
+                availableTags: {{ tags_list }},
                 allowSpaces: true
             })
         });
     </script>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="navbar navbar-fixed-top navbar-inverse">
-    <div class="navbar-inner">
-        <div class="container-fluid">
 
-            <a class="brand" href="/">Главная</a>
-            <ul class="nav">
-                <li><a href="load">Загрузить фотографию</a></li>
-                {% if user=='' %}
-                    <li><a href="#modal-login" data-toggle="modal">Войти</a><li>
-                {% else %}
-                    <li>{{greeting}}</li>
-                {% endif %}
-            </ul>
-
-
-        </div>
-    </div>
-</div>
-
+{% include 'navbar.html' %}
 {% block body %}
 
 <div class="container-fluid">
@@ -99,14 +69,13 @@
 
             <div id="gallery" data-toggle="modal-gallery" data-target="#modal-gallery">
                 {%for picture in pictures%}
-                <a rel="gallery" href="{{picture.link}}" title="{{picture.title}}" ><img src="{{picture.thumb}}"></a>
+                <a rel="gallery" href="{{picture.link}}" title="{{picture.title}}"><img src="{{picture.thumb}}"></a>
                 {% endfor %}
             </div>
             <br>
         </div>
         <div class='span2'>
-            <input type="text" id="amount" style="border: 0; color: #0084f6; font-weight: bold;" />
-            <div id="slider-range"></div>
+            {% include 'rightbar.html' %}
         </div>
 
 </div>
@@ -118,6 +87,7 @@
     </div>
     <div class="modal-body"><div class="modal-image"></div></div>
     <div class="modal-footer">
+
         <a class="btn modal-download" target="_blank">
             <i class="icon-download"></i>
             <span>Загрузить</span>

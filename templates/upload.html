@@ -8,18 +8,38 @@
             </div>
         {% endif %}
 
-        <form action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
-            Загрузить фотографию: <input type="file" name="file" accept='image/*' required="required">
-            <br>
-            Год снимка: <input type="number" name="year" placeholder="1945" value="1945">
-            <br>
-            Теги, например "Истра, монастырь:
-            <input id="myTags" name="tags">
-            <br>
-            Название <input type="text" name="title" placeholder="снимок сделан на празновании победы">
-            <br>
+        <form class="form-horizontal" action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
+            <div class="control-group">
+                <label class="control-label" for="title">Название</label>
+                <div class="controls">
+                    <input type="text" name="title" id="title" placeholder="снимок сделан на празновании Дня Победы">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="file">Загрузить фотографию</label>
+                <div class="controls">
+                    <input type="file" name="file" id="file" accept='image/*' required="required">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="year">Год снимка</label>
+                <div class="controls">
+                    <input type="number" name="year" id="year" placeholder="1945" value="1945">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="tagit-new">Теги, например "Истра, монастырь"</label>
 
-            <input class = "btn btn-info" type="submit" name="submit" value="Загрузить">
+                <div class="controls">
+                    <input id="myTags" name="tags">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <input class = "btn btn-large btn-success" type="submit" name="submit" value="Загрузить">
+                </div>
+            </div>
         </form>
     </div>
 

@@ -1,0 +1,25 @@
+<script>
+    $(function() {
+        $( "#slider-range" ).slider({
+            range: true,
+            min: 1900,
+            max: 2020,
+            values: [ 1950, 1970 ],
+            slide: function( event, ui ) {
+                $( "#amount" ).val( ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+            }
+        });
+        $( "#amount" ).val( $( "#slider-range" ).slider( "values", 0 ) +
+                " - " + $( "#slider-range" ).slider( "values", 1 ) );
+    });
+</script>
+
+<span>Фильтры</span>
+<input type="text" id="amount" style="border: 0; color: #0084f6; font-weight: bold;" />
+<div id="slider-range"></div>
+<br>
+<div>
+    {% for tag in tags%}
+        <li><a href='?tag={{tag.key().id()}}'>{{tag.title}}</a></li>
+    {% endfor %}
+</div>

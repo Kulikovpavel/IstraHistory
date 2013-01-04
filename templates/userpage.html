@@ -1,4 +1,14 @@
- {%for picture in pictures%}
-    <a rel="gallery" href="{{picture.link}}" title="{{picture.title}}" ><img src="{{picture.thumb}}"></a>
-    
- {% endfor %}
+{% extends "index.html" %}
+{% block body %}
+    <div class="container">
+        {%for picture in pictures%}
+            <div>
+                <a href="/picture/{{picture.key().id()}}" title="{{picture.title}}" ><img src="{{picture.thumb}}"></a>
+                <br><br>
+                <form action='/picture/{{ picture.key().id() }}?action=delete' method="post" > <input class='btn' type="submit" value='Удалить'></form>
+            </div>
+
+
+        {% endfor %}
+    </div>
+{% endblock %}

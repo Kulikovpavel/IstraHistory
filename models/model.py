@@ -1,5 +1,9 @@
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
+from google.appengine.api import images
+
+
+from helpers import *
 
 class User(db.Model):
     name = db.StringProperty(required = True)
@@ -43,5 +47,13 @@ class Picture(db.Model):
     date = db.DateTimeProperty()
     created = db.DateTimeProperty(auto_now_add=True)
 
+
+    def link_func(cls,key):
+        return images.get_serving_url(key, size = 0)
+
+    def thumb_func(cls,key):
+        return images.get_serving_url(key, size = 75)
+
 class Tag(db.Model):
+    title = db.StringProperty()
     count = db.IntegerProperty()
