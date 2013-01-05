@@ -31,11 +31,6 @@ upload_url = blobstore.create_upload_url('/upload')
 
 class HistoryHandler(webapp2.RequestHandler):
     def tags_update(self, tags):
-        tags_data = memcache.get('tags_all')
-        if tags_data is  None:
-            tags_data = Tag.all()
-            memcache.add('tags_all', tags_data, 60)
-
         for tag in tags:
             if tag:
                 tag_in_db = Tag.all().filter('title = ', tag).get()
@@ -45,6 +40,23 @@ class HistoryHandler(webapp2.RequestHandler):
                 else:
                     tag_in_db = Tag(title = tag, count = 1)
                     tag_in_db.put()
+        tags_data = Tag.all().order('-count').fetch(30)
+        memcache.add('tags_all', tags_data, 60)
+
+    def tags_delete(self, tags):
+        for tag in tags:
+            if tag:
+                tag_in_db = Tag.all().filter('title = ', tag).get()
+                if tag_in_db:
+                    tag_in_db.count -= 1
+                    if tag_in_db.count<1:# delete Tags with 0 count
+                        tag_in_db.delete()
+                    else:
+                        tag_in_db.put()
+                else:
+                    logging.error("Tag not found while delete: "+tag)
+        tags_data = Tag.all().order('-count').fetch(30)
+        memcache.add('tags_all', tags_data, 60)
     def set_secure_cookie(self, name, val):
         cookie_val = make_secure_val(val)
         self.response.headers.add_header(
@@ -199,7 +211,7 @@ class MainPage(HistoryHandler):
         else:
             data = memcache.get('pictures_all')
             if data is  None:
-                data = Picture.all()
+                data = Picture.all().fetch(300)
                 memcache.add('pictures_all', data, 60)
         
         
@@ -207,7 +219,7 @@ class MainPage(HistoryHandler):
 
         tags_data = memcache.get('tags_all')
         if tags_data is  None:
-            tags_data = Tag.all().order('-count')
+            tags_data = Tag.all().order('-count').fetch(30)
             memcache.add('tags_all', tags_data, 60)
 
         self.template_values['tags'] = tags_data
@@ -231,10 +243,13 @@ class LoadPage(HistoryHandler):
         if self.user:
 
 
-            tags_data = Tag.all().order('-count')
+            tags_data = memcache.get('tags_all')
+            if tags_data is  None:
+                tags_data = Tag.all().order('-count').fetch(30)
+                memcache.add('tags_all', tags_data, 60)
 
             self.template_values['tags_list'] = ("["+''.join(["'"+x.title+"'," for x in tags_data if x.title])+"]").replace('\\','')
-#            self.template_values['tags_list'] = list(x.title for x in tags_data)
+#            self.template_values['tags_list'] = list(x.title for x in tags_data if x.title)
             msg = self.request.get("msg")
             template = jinja_environment.get_template('upload.html')
             self.template_values['msg'] = msg
@@ -251,8 +266,10 @@ class PicturePage(HistoryHandler):
         logging.info(picture.user)
         logging.info(self.user)
         if action=='delete' and picture and picture.user.key() == self.user.key():
-
+            self.tags_delete(picture.tags)
             picture.delete()
+            data = Picture.all().fetch(300)
+            memcache.add('pictures_all', data, 60)
 
         self.redirect('/userpage')
 
