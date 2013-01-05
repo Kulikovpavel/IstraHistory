@@ -99,8 +99,8 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
 #        if not image_type:
 #            self.redirect('/')
         title = self.request.get('title').replace('\\','')
-        logging.debug(title)
-        logging.debug(self.request.get('title'))
+
+        logging.debug(self.request)
         year = int(self.request.get('year'))
         tags = list(self.request.get('tags').lower().replace('\\','').split(','))  # теги в нижний регистр, разделяем по запятой и в лист
         if upload_files and self.user:
