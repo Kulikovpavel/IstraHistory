@@ -1,5 +1,6 @@
-# -*- coding: utf-8 -*-
 # #!/usr/bin/env python
+# # -*- coding: utf-8 -*-
+
 
 
 import webapp2
@@ -98,9 +99,9 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
 #        image_type = imghdr.what(upload_files[0].filename)
 #        if not image_type:
 #            self.redirect('/')
-        title = self.request.get('title')
+        title = unicode(self.request.get('title').replace('\\',''))
         year = int(self.request.get('year'))
-        tags = list(self.request.get('tags').lower().split(','))  # теги в нижний регистр, разделяем по запятой и в лист
+        tags = list(unicode(self.request.get('tags').lower().replace('\\','')).split(','))  # теги в нижний регистр, разделяем по запятой и в лист
         if upload_files and self.user:
             blob_info = upload_files[0]
             key = blob_info.key()
