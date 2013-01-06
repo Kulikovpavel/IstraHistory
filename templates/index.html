@@ -21,9 +21,10 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
-    <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
+{#    <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">#}
 
-    <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
+{#    <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">#}
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <link rel="stylesheet" href="css/bootstrap-image-gallery.min.css">
@@ -90,7 +91,10 @@
         </p>
     </header>
     <div class="row-fluid">
-        <div class="span10">
+        <div class='span2'>
+            {% include 'rightbar.html' %}
+        </div>
+        <div class="span8 offset2">
 
             <div id="gallery" data-toggle="modal-gallery" data-target="#modal-gallery">
                 {%for picture in pictures%}
@@ -99,9 +103,7 @@
             </div>
             <br>
         </div>
-        <div class='span2'>
-            {% include 'rightbar.html' %}
-        </div>
+
 
 </div>
 <!-- modal-gallery is the modal dialog used for the image gallery -->
