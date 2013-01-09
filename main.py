@@ -4,12 +4,11 @@
 
 import webapp2
 import jinja2
-import os
 import urllib
-import imghdr
-import re
 import logging
-import urlparse
+import json
+import random
+
 #from string import letters
 
 from helpers import *
@@ -279,8 +278,35 @@ class PicturePage(HistoryHandler):
         self.redirect('/userpage')
 
 
+class ULoginHandler(HistoryHandler):
+    def post(self):
+        # gets JSON from ULogin
+        token = self.request.get('token')
+        params ={'token': token, 'host': self.domain_url}
+        params = urllib.urlencode(params)
+
+        f = urllib.urlopen("http://ulogin.ru/token.php?%s" % params)
+        ulogin = json.load(f)
+        logging.debug(ulogin)
+        if (not 'error' in ulogin) and 'email' in ulogin and ulogin['verified_email'] == '1':# email is confirmed
+            email = ulogin['email']
+
+            user = User.by_email(ulogin['email'])
+            if user:# if user is found - login with it
+                self.login(user)
+
+            else: # else create new User
+                username = ulogin['first_name'] + ' ' + ulogin['last_name']# gets "Ivan Ivanov" string for name
+                chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+                password = ''.join(random.choice(chars) for _ in range(10))
+                u = User.register(username, email, password)
+                u.put()
+                self.login(u)
+        else:
+            logging.warning('Problems with ulogin')
 
 
+        self.redirect('/')
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
@@ -291,5 +317,6 @@ app = webapp2.WSGIApplication([
     ('/login', LoginHandler),
     ('/register',RegisterHandler),
     ('/logout',Logout),
-    ('/picture/(\d+)', PicturePage)
+    ('/picture/(\d+)', PicturePage),
+    ('/ulogin', ULoginHandler)
 ], debug=True)
