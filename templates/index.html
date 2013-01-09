@@ -53,20 +53,7 @@
     <script src="js/bootstrap-image-gallery.min.js"></script>
     <script src="js/main.js"></script>
 
-    <script>
-        $('#modal-login').on('shown', function () {
-            $('input:visible:first', this).focus();
-        });
-        $('#modal-register').on('shown', function () {
-            $('input:visible:first', this).focus();
-        });
-    </script>
 
-    <script>
-        $('#button-register').on('click', function () {
-            $('#modal-register').modal('toggle');
-        });
-    </script>
 
     <link rel="stylesheet" href="css/style.css">
 
@@ -134,7 +121,7 @@
         </a>
     </div>
 </div>
-<div id ='modal-login' class ='modal hide fade modal'>
+<div id ='modal-login' class ='modal hide fade'>
     <form action = '{{login_url}}' method="POST">
         <div class="modal-header">
             <!-- <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
@@ -148,12 +135,12 @@
         <div class="modal-footer">
             <button type='submit' class="btn btn-primary">Войти</button>
             <button class="btn" data-dismiss="modal" aria-hidden="true">Закрыть</button>
-            <button id='button-register' class='btn' data-dismiss='modal'>Регистрация</button>
+            <a id='button-register' class='btn' data-dismiss='modal'>Регистрация</a>
         </div>
-
+        {%  include 'ulogin-social.html' %}
     </form>
 </div>
-<div id ='modal-register' class ='modal hide fade'>
+<div id='modal-register' class ='modal hide fade'>
     <form action = '{{register_url}}' method="POST">
         <div class="modal-header">
             <!-- <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
@@ -197,5 +184,20 @@
 </script><noscript><a href="http://reformal.ru"><img src="http://media.reformal.ru/reformal.png" /></a><a href="http://istrahistory.reformal.ru">Oтзывы и предложения для Истра</a></noscript>
 </div>
 </body>
+
+<script>
+    $('#modal-login').on('shown', function () {
+        $('input:visible:first', this).focus();
+    });
+    $('#modal-register').on('shown', function () {
+        $('input:visible:first', this).focus();
+    });
+</script>
+
+<script>
+    $('#button-register').on('click', function () {
+        $('#modal-register').modal('toggle');
+    });
+</script>
 
 </html>

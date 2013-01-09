@@ -9,6 +9,7 @@ import urllib
 import imghdr
 import re
 import logging
+import urlparse
 #from string import letters
 
 from helpers import *
@@ -80,8 +81,10 @@ class HistoryHandler(webapp2.RequestHandler):
         self.register_url = '/register'
         self.login_url = '/login'
         self.logout_url = '/logout'
+
 #        self.upload_url = blobstore.create_upload_url('/upload')
         webapp2.RequestHandler.initialize(self, *a, **kw)
+        self.domain_url = self.request.host_url
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
 
@@ -100,6 +103,8 @@ class HistoryHandler(webapp2.RequestHandler):
             'register_url': self.register_url,
             'login_url': self.login_url,
             'user': self.user,
+            'ulogin_url': self.domain_url+'/ulogin'
+
             }
         
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):

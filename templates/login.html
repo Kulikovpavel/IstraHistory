@@ -21,14 +21,17 @@
             <div>
                 <button type='submit' class="btn btn-primary">Войти</button>
                 <a class="btn" href='/'>На главную страницу</a>
-                <button id='button-register' class='btn' data-dismiss='modal'>Регистрация</button>
+                <a id="button-register" class="btn" data-dismiss="modal">Регистрация</a>
             </div>
 
         </form>
-    </div>
+
+        {%  include 'ulogin-social.html' %}
+
+       </div>
 
 
-    <div id ='modal-register' class ='modal hide fade'>
+    <div id='modal-register' class ='modal hide fade'>
         <form action = '{{register_url}}' method="POST">
             <div class="modal-header">
                 <!-- <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
@@ -49,7 +52,5 @@
 
         </form>
     </div>
-
-
 
 {% endblock %}
