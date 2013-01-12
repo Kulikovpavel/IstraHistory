@@ -39,3 +39,7 @@ ul.tagit {
     display: block;
     padding: 10px 15px 10px;
 }
+
+select{
+    width: 150px;
+}

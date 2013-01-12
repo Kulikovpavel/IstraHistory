@@ -46,6 +46,8 @@ class Picture(db.Model):
     year = db.IntegerProperty()
     date = db.DateTimeProperty()
     created = db.DateTimeProperty(auto_now_add=True)
+    coordinates = db.GeoPtProperty()
+    direction = db.IntegerProperty()
 
 
     def link_func(cls,key):

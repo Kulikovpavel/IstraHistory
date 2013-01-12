@@ -35,6 +35,14 @@
                 </div>
             </div>
 
+            <div class='control-group'>
+                <div class="controls">
+                    <div id="map" style="width: 600px; height: 400px"></div>
+
+                    <input class='hidden' id="coordinates" name="coordinates">
+                </div>
+            </div>
+
             <div class="control-group">
                 <div class="controls">
                     <input class = "btn btn-large btn-success" type="submit" name="submit" value="Загрузить">
@@ -45,5 +53,54 @@
     </div>
 
 
+    <script type="text/javascript">
+        ymaps.ready(init);
+        var myMap;
+
+        function init(){
+            myMap = new ymaps.Map ("map", {
+                center: [55.91,36.86],
+                zoom: 10
+            },{
+                balloonMaxWidth: 200
+            });
+
+            myMap.controls
+                // Кнопка изменения масштаба
+                    .add('zoomControl')
+                // Список типов карты
+                    .add('typeSelector')
+                // Кнопка изменения масштаба - компактный вариант
+                // Расположим её справа
+                    .add('smallZoomControl', { right: 5, top: 75 })
+                // Стандартный набор кнопок
+                    .add('mapTools');
+
+            myMap.events.add('click', function (e) {
+                var coords = e.get('coordPosition');
+                var selector = '<select id="direction" name="direction" width="100">' +
+                        '<option value="1">север</option>' +
+                        '<option value="2">северо-запад/option>' +
+                        '<option value="3">запад</option>' +
+                        '<option value="4">юго-запад</option>' +
+                        '<option value="5">юг</option>' +
+                        '<option value="6">юго-восток</option>' +
+                        '<option value="7">восток</option>' +
+                        '<option value="8">северо-восток</option>' +
+                        '</select>';
+                myMap.balloon.open(coords, {
+                    contentHeader: 'Точка фотографии',
+                    contentBody: '<p>Выберите направление снимка</p>'+selector,
+                    contentFooter: '<sup>Точка установлена верно?</sup>'
+                    });
+
+                $('#coordinates').val( coords);
+
+            });
+            myMap.balloon.events.add('close', function (e) {
+                $('#coordinates').val('');
+            });
+        }
+    </script>
 
 {% endblock %}

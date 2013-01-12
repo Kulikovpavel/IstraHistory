@@ -9,8 +9,6 @@ import logging
 import json
 import random
 
-#from string import letters
-
 from helpers import *
 
 from google.appengine.ext import blobstore
@@ -122,6 +120,16 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
         logging.debug(self.request)
         year = int(self.request.get('year'))
         tags = list(self.request.get('tags').lower().replace('\\','').split(','))  # теги в нижний регистр, разделяем по запятой и в лист
+
+        coordinates = self.request.get('coordinates')
+        direction = self.request.get('direction')
+        if not coordinates:
+            coordinates = '55.914125,36.860562' # center of Istra if no coords
+        if direction:
+            direction = int(direction)
+        else:
+            direction = 9
+
         if upload_files and self.user:
             blob_info = upload_files[0]
             key = blob_info.key()
@@ -132,7 +140,9 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
                               user = self.user,
                               title = title,
                               year = year,
-                              tags = tags)
+                              tags = tags,
+                              coordinates = coordinates,
+                              direction = direction)
             picture.put()
 
             self.tags_update(tags)
