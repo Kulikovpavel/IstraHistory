@@ -1,0 +1,53 @@
+<script type="text/javascript">
+    ymaps.ready(init);
+    var myMap;
+
+    function init(){
+        myMap = new ymaps.Map ("map", {
+            center: [55.91,36.86],
+            zoom: 10,
+            behaviors: ['default', 'scrollZoom']
+        },{
+            balloonMaxWidth: 200
+        });
+        myMap.container.fitToViewport();
+        myMap.controls
+            // Кнопка изменения масштаба
+                .add('zoomControl')
+            // Список типов карты
+                .add('typeSelector')
+            // Кнопка изменения масштаба - компактный вариант
+            // Расположим её справа
+                .add('smallZoomControl', { right: 5, top: 75 })
+            // Стандартный набор кнопок
+                .add('mapTools');
+
+
+        var clusterer = new ymaps.Clusterer(),
+        // Создаем коллекцию геообъектов.
+                collection = new ymaps.GeoObjectCollection();
+        // Дополнительное поле ввода при включенном режиме кластеризации.
+
+        clusterer.options.set({
+            gridSize: 6
+        });
+
+        // Добавляем кластеризатор на карту.
+        myPlacemark1 = new ymaps.Placemark([55.8, 37.6], {
+            // Свойства.
+            // Содержимое иконки, балуна и хинта.
+            iconContent: '1',
+            balloonContent: 'Балун',
+            hintContent: 'Стандартный значок метки'
+        }, {
+            // Опции.
+            // Стандартная фиолетовая иконка.
+            preset: 'twirl#violetIcon'
+        })
+        myMap.geoObjects.add(clusterer);
+        clusterer.add(myPlacemark1);
+        // Добавляем коллекцию геообъектов на карту.
+        myMap.geoObjects.add(collection);
+
+    }
+</script>
