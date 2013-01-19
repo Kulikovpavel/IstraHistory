@@ -8,9 +8,11 @@
             zoom: 10,
             behaviors: ['default', 'scrollZoom']
         },{
-            balloonMaxWidth: 200
+{#            balloonMaxWidth: 200#}
         });
-        myMap.container.fitToViewport();
+
+{#        myMap.container.fitToViewport();#}
+
         myMap.controls
             // Кнопка изменения масштаба
                 .add('zoomControl')
@@ -23,31 +25,42 @@
                 .add('mapTools');
 
 
-        var clusterer = new ymaps.Clusterer(),
+        var clusterer = new ymaps.Clusterer();
         // Создаем коллекцию геообъектов.
-                collection = new ymaps.GeoObjectCollection();
+{#                collection = new ymaps.GeoObjectCollection();#}
         // Дополнительное поле ввода при включенном режиме кластеризации.
 
         clusterer.options.set({
-            gridSize: 6
+            gridSize: 100
         });
 
         // Добавляем кластеризатор на карту.
-        myPlacemark1 = new ymaps.Placemark([55.8, 37.6], {
-            // Свойства.
-            // Содержимое иконки, балуна и хинта.
-            iconContent: '1',
-            balloonContent: 'Балун',
-            hintContent: 'Стандартный значок метки'
-        }, {
-            // Опции.
-            // Стандартная фиолетовая иконка.
-            preset: 'twirl#violetIcon'
-        })
+{#        var array = [];#}
+{#        array[0] = myPlacemark1;#}
+        var array = [];
+
+        {% for picture in pictures %}
+            {% if picture.coordinates != None %}
+            myPlacemark1 = new ymaps.Placemark( [{{picture.coordinates}}], {
+                // Свойства.
+                // Содержимое иконки, балуна и хинта.
+                iconContent: '',
+                balloonContent: '<a href="{{picture.link}}" title="{{picture.title}}">' +
+                                        '<img src="{{picture.thumb}}">' +
+                                '</a>',
+                hintContent: '<span style="color:#000">{{ picture.title }}</span> '
+            }, {
+                // Опции.
+                // Стандартная фиолетовая иконка.
+                preset: 'twirl#violetIcon'
+            });
+            array.push(myPlacemark1);
+            {%  endif %}
+        {% endfor %}
+
+        clusterer.add(array);
         myMap.geoObjects.add(clusterer);
-        clusterer.add(myPlacemark1);
-        // Добавляем коллекцию геообъектов на карту.
-        myMap.geoObjects.add(collection);
+{#        myMap.geoObjects.add(array);#}
 
     }
 </script>

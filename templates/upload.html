@@ -60,7 +60,8 @@
         function init(){
             myMap = new ymaps.Map ("map", {
                 center: [55.91,36.86],
-                zoom: 10
+                zoom: 10,
+                behaviors: ['default', 'scrollZoom']
             },{
                 balloonMaxWidth: 200
             });
@@ -81,7 +82,7 @@
                 var selector = '<select id="direction" name="direction" width="100">' +
                         '<option value="9">неизвестно</option>' +
                         '<option value="1">север</option>' +
-                        '<option value="2">северо-запад/option>' +
+                        '<option value="2">северо-запад</option>' +
                         '<option value="3">запад</option>' +
                         '<option value="4">юго-запад</option>' +
                         '<option value="5">юг</option>' +
