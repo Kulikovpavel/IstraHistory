@@ -43,3 +43,15 @@ ul.tagit {
 select{
     width: 150px;
 }
+
+footer {
+
+    text-align: center;
+    width:100%;
+    height:20px;
+    position:absolute;
+    bottom:10px;
+    left:0;
+
+}
+}
