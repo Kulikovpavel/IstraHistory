@@ -25,7 +25,7 @@ from models import *
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader("templates"))
 
-upload_url = blobstore.create_upload_url('/upload')
+#upload_url = blobstore.create_upload_url('/upload')
 
 class HistoryHandler(webapp2.RequestHandler):
     def pictures_update(self):
@@ -79,7 +79,7 @@ class HistoryHandler(webapp2.RequestHandler):
         self.login_url = '/login'
         self.logout_url = '/logout'
 
-#        self.upload_url = blobstore.create_upload_url('/upload')
+        self.upload_url = blobstore.create_upload_url('/upload')
         webapp2.RequestHandler.initialize(self, *a, **kw)
         self.domain_url = self.request.host_url
         uid = self.read_secure_cookie('user_id')
@@ -96,7 +96,7 @@ class HistoryHandler(webapp2.RequestHandler):
             'greeting': self.greeting,
             'url': 'url',
             'url_linktext': 'url_linktext',
-            'upload_url': upload_url,
+            'upload_url': self.upload_url,
             'register_url': self.register_url,
             'login_url': self.login_url,
             'user': self.user,
@@ -254,7 +254,6 @@ class UserPage(HistoryHandler):
         else:
             self.redirect('/login')
 
-        
 class LoadPage(HistoryHandler):
     def get(self):
         if self.user:
@@ -287,7 +286,6 @@ class PicturePage(HistoryHandler):
 
         self.redirect('/userpage')
 
-
 class ULoginHandler(HistoryHandler):
     def post(self):
         # gets JSON from ULogin
@@ -318,6 +316,17 @@ class ULoginHandler(HistoryHandler):
 
         self.redirect('/')
 
+class PicturesAPI(webapp2.RequestHandler):
+    def get(self):
+        data = memcache.get('pictures_all')
+        self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+        data = json.dumps(data)
+        self.response.out.write(data)
+
+
+
+
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/userpage', UserPage),
@@ -328,5 +337,6 @@ app = webapp2.WSGIApplication([
     ('/register',RegisterHandler),
     ('/logout',Logout),
     ('/picture/(\d+)', PicturePage),
-    ('/ulogin', ULoginHandler)
+    ('/ulogin', ULoginHandler),
+    ('/pictures_api',PicturesAPI)
 ], debug=True)
