@@ -22,11 +22,11 @@
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-    <link rel="stylesheet" href="css/bootstrap-image-gallery.min.css">
+    <link rel="stylesheet" href="../css/bootstrap-image-gallery.min.css">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
-    <link rel="stylesheet" href="css/jquery.tagit.css" >
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/jquery.tagit.css" >
+    <link rel="stylesheet" href="../css/style.css">
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
@@ -36,24 +36,14 @@
 
     <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 
-    <!-- TAGS-->
-    <script src="js/tag-it.min.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            $('#myTags').tagit({
-                availableTags: {{ tags_list }},
-                allowSpaces: true
-            })
-        });
-    </script>
 
 
 
     <script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
     <script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
-    <script src="js/bootstrap-image-gallery.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="../js/bootstrap-image-gallery.min.js"></script>
+    <script src="../js/main.js"></script>
     <script src="http://api-maps.yandex.ru/2.0-stable/?load=package.full&lang=ru-RU" type="text/javascript"></script>
 
 
@@ -71,10 +61,10 @@
 {#            <p>Тот, кто не помнит прошлого, обречен совершать ошибки в будущем</p>#}
 {#        </blockquote>#}
         
-        <p>
-            <button id="start-slideshow" class="btn btn-large btn-success" data-slideshow="5000" data-target="#modal-gallery" data-selector="#gallery a[rel=gallery]">Запустить слайдшоу</button>
-            <button id="toggle-fullscreen" class="btn btn-large btn-primary" data-toggle="button">Полный экран</button>
-        </p>
+{#        <p>#}
+{#            <button id="start-slideshow" class="btn btn-large btn-success" data-slideshow="5000" data-target="#modal-gallery" data-selector="#gallery a[rel=gallery]">Запустить слайдшоу</button>#}
+{#            <button id="toggle-fullscreen" class="btn btn-large btn-primary" data-toggle="button">Полный экран</button>#}
+{#        </p>#}
     </header>
 
     <div class="row-fluid">
@@ -106,6 +96,7 @@
             <i class="icon-download"></i>
             <span>Загрузить</span>
         </a>
+        <a class="btn" href="/picture">Подробности</a>
         <a class="btn btn-success modal-play modal-slideshow" data-slideshow="5000">
             <i class="icon-play icon-white"></i>
             <span>Слайдшоу</span>

@@ -1,5 +1,19 @@
 {% extends "index.html" %}
 {% block body %}
+
+    <!-- TAGS-->
+    <script src="../js/tag-it.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#myTags').tagit({
+                availableTags: {{ tags_list }},
+                allowSpaces: true
+            })
+        });
+    </script>
+
+
     <div class="container">
         {% if not msg == '' %}
             <div class='alert'>

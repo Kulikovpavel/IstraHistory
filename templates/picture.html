@@ -1,0 +1,11 @@
+{% extends "index.html" %}
+{% block body %}
+    <div class="container">
+        {% for attribute in picture.properties() %}
+            <p>{{ attribute }}: {{ picture[attribute] }}</p>
+        {% endfor %}
+    </div>
+
+
+
+{% endblock %}

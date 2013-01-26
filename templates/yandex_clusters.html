@@ -32,7 +32,7 @@
         // Дополнительное поле ввода при включенном режиме кластеризации.
 
         clusterer.options.set({
-            gridSize: 100
+            gridSize: 70
         });
 
         // Добавляем кластеризатор на карту.
@@ -40,7 +40,7 @@
 {#        array[0] = myPlacemark1;#}
         var array = [];
 
-        get_ajax();
+{#        get_ajax();#}
 
         {% for picture in pictures %}
             {% if picture.coordinates != None %}
@@ -48,7 +48,7 @@
                 // Свойства.
                 // Содержимое иконки, балуна и хинта.
                 iconContent: '',
-                balloonContent: '<a href="{{picture.link}}" title="{{picture.title}}">' +
+                balloonContent: '<a href="/picture/{{picture.key().id()}}" title="{{picture.title}}">' +
                                         '<img src="{{picture.thumb}}">' +
                                 '</a>',
                 hintContent: '<span style="color:#000">{{ picture.title }}</span> '
@@ -71,7 +71,7 @@
         $.ajax({
             type: 'GET',
             url: '/pictures_api', // or your absolute-path
-{#            data : name=totty&age=20,#}
+            data : "name=totty&age=20",
             dataType : 'json',
             success : function(resp)
             {

@@ -86,7 +86,7 @@ class HistoryHandler(webapp2.RequestHandler):
         self.user = uid and User.by_id(int(uid))
 
         if self.user:
-            self.greeting = (u"<span>Добро пожаловать, <a href='userpage'>%s</a>! (<a href=\"%s\">выйти</a>)</span>" %
+            self.greeting = (u"<span><a href='userpage'>Добро пожаловать, %s</a>! (<a href=\"%s\">выйти</a><span>)" %
                         (self.user.name, self.logout_url))
 
         else:
@@ -247,7 +247,6 @@ class MainPage(HistoryHandler):
 class UserPage(HistoryHandler):
     def get(self):
         if self.user:
-            template_values = {}
             self.template_values['pictures'] = self.user.pictures
             template = jinja_environment.get_template('userpage.html')
             self.response.out.write(template.render(self.template_values))
@@ -283,8 +282,16 @@ class PicturePage(HistoryHandler):
             self.tags_delete(picture.tags) # update Tags, -1 count or delete at all
             picture.delete()
             self.pictures_update()
-
         self.redirect('/userpage')
+    def get(self, id):
+        id =  int(urllib.unquote(id))
+        picture = Picture.get_by_id(id)
+        if picture:
+            template = jinja_environment.get_template('picture.html')
+            self.response.out.write(template.render({"picture":picture}))
+        else:
+            self.redirect('/')
+
 
 class ULoginHandler(HistoryHandler):
     def post(self):
@@ -319,8 +326,9 @@ class ULoginHandler(HistoryHandler):
 class PicturesAPI(webapp2.RequestHandler):
     def get(self):
         data = memcache.get('pictures_all')
-        self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
-        data = json.dumps(data)
+#        self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+        data = json.dumps([[[x.coordinates[0], x.coordinates[1]], x.title, x.link, x.thumb]
+                           for x in data if x.coordinates])
         self.response.out.write(data)
 
 
