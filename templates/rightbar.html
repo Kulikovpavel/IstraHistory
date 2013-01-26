@@ -17,8 +17,10 @@
 <section>
     <input type="text" id="amount" style="border: 0; color: #0084f6; font-weight: bold;" />
     <div id="slider-range"></div>
-    <br>
+    <hr>
+
     <div>
+        <h5>Теги:</h5>
         {% for tag in tags%}
             <li><a href='?tag={{tag.key().id()}}'>{{tag.title}}</a></li>
         {% endfor %}

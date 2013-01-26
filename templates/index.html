@@ -29,24 +29,14 @@
     <link rel="stylesheet" href="../css/style.css">
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-
-
-
     <!-- SLIDER-->
-
     <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
-
-
-
-
 
     <script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
     <script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
     <script src="../js/bootstrap-image-gallery.min.js"></script>
     <script src="../js/main.js"></script>
     <script src="http://api-maps.yandex.ru/2.0-stable/?load=package.full&lang=ru-RU" type="text/javascript"></script>
-
-
 </head>
 <body>
 
@@ -54,25 +44,25 @@
 {% block body %}
 
 <div class="container-fluid">
-    <header>
-
-{#        <h1>Истринская галерея</h1>#}
+{#    <header>#}
+{#        <h4>Истринская галерея</h4>#}
 {#        <blockquote>#}
 {#            <p>Тот, кто не помнит прошлого, обречен совершать ошибки в будущем</p>#}
 {#        </blockquote>#}
-        
+{#        #}
 {#        <p>#}
 {#            <button id="start-slideshow" class="btn btn-large btn-success" data-slideshow="5000" data-target="#modal-gallery" data-selector="#gallery a[rel=gallery]">Запустить слайдшоу</button>#}
 {#            <button id="toggle-fullscreen" class="btn btn-large btn-primary" data-toggle="button">Полный экран</button>#}
 {#        </p>#}
-    </header>
+{#    </header>#}
 
     <div class="row-fluid">
-        <div class="span10">
-            <div id="map" style="width: 100%; height: 600px"></div>
+        <div class="span10 well">
+            <div id="map" style="width: 100%; height: 700px;"></div>
+            <hr>
             {% include 'rightbar.html' %}
         </div>
-        <div class='span2'>
+        <div class='span2 well'>
             <p>Последние фотографии</p>
             <div id="gallery" data-toggle="modal-gallery" data-target="#modal-gallery">
                 {%for picture in pictures%}
@@ -111,85 +101,13 @@
         </a>
     </div>
 </div>
-<div id ='modal-login' class ='modal hide fade'>
-    <form action = '{{login_url}}' method="POST">
-        <div class="modal-header">
-            <!-- <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
-            <h3>Войти на сайт</h3>
-        </div>
-        <div class="modal-body">
-            <input type="email" name="email" placeholder='example@mail.ru' required="required">
-            <br>
-            <input type='password' name='password' placeholder='Ваш пароль' required="required">
-        </div>
-        <div class="modal-footer">
-            <button type='submit' class="btn btn-primary">Войти</button>
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Закрыть</button>
-            <a id='button-register' class='btn' data-dismiss='modal'>Регистрация</a>
-        </div>
-        {%  include 'ulogin-social.html' %}
-    </form>
-</div>
-<div id='modal-register' class ='modal hide fade'>
-    <form action = '{{register_url}}' method="POST">
-        <div class="modal-header">
-            <!-- <a type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> -->
-            <h3 >Зарегистрироваться на сайте</h3>
-        </div>
-        <div class="modal-body">
-            <input type='text' name='username' placeholder='Иван Иванов' required="required">
-            <br>
-            <input type="email" name="email" placeholder='example@mail.ru' required="required">
-            <br>
-            <input type='password' name='password' placeholder='Ваш пароль' required="required">
-        </div>
-        <div class="modal-footer">
-            <button type='submit' class="btn btn-primary">Зарегистрироваться</button>
-            <button class="btn" data-dismiss="modal">Закрыть</button>
 
-        </div>
-
-    </form>
-</div>
+    {% include 'login-register-modal.html' %}
 
     {%  include 'yandex_clusters.html' %}
-
-
 {% endblock %}
 
-<footer>
-<a href="http://istrahistory.reformal.ru" onclick="Reformal.widgetOpen();return false;" onmouseover="Reformal.widgetPreload();">Oтзывы и предложения</a><script type="text/javascript">
-    var reformalOptions = {
-        project_id: 88588,
-        show_tab: false,
-        project_host: "istrahistory.reformal.ru"
-    };
+{% include 'footer.html' %}
 
-    (function() {
-        var script = document.createElement('script');
-        script.type = 'text/javascript'; script.async = true;
-        script.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'media.reformal.ru/widgets/v3/reformal.js';
-        document.getElementsByTagName('head')[0].appendChild(script);
-    })();
-</script><noscript><a href="http://reformal.ru"><img src="http://media.reformal.ru/reformal.png" /></a><a href="http://istrahistory.reformal.ru">Oтзывы и предложения для Истра</a></noscript>
-</footer>
 </body>
-
-<script>
-    $('#modal-login').on('shown', function () {
-        $('input:visible:first', this).focus();
-    });
-    $('#modal-register').on('shown', function () {
-        $('input:visible:first', this).focus();
-    });
-</script>
-
-<script>
-    $('#button-register').on('click', function () {
-        $('#modal-register').modal('toggle');
-    });
-</script>
-
-
-
 </html>

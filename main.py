@@ -288,7 +288,8 @@ class PicturePage(HistoryHandler):
         picture = Picture.get_by_id(id)
         if picture:
             template = jinja_environment.get_template('picture.html')
-            self.response.out.write(template.render({"picture":picture}))
+            self.template_values['picture'] = picture
+            self.response.out.write(template.render(self.template_values))
         else:
             self.redirect('/')
 
