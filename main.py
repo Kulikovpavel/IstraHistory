@@ -121,7 +121,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
 
         logging.debug(self.request)
         year = int(self.request.get('year'))
-        tags = list(self.request.get('tags').lower().replace('\\','').split(','))  # теги в нижний регистр, разделяем по запятой и в лист
+        tags = list(self.request.get('tags').lower().replace('\\','').replace("'",'').split(','))  # теги в нижний регистр, разделяем по запятой и в лист
 
         coordinates = self.request.get('coordinates')
         direction = self.request.get('direction')
