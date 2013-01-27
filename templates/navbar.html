@@ -1,4 +1,4 @@
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-fixed-top" xmlns="http://www.w3.org/1999/html">
     <div class="navbar-inner nav-right pull-right">
         <div class="container-fluid">
 
@@ -6,9 +6,9 @@
             <ul class="nav">
                 <li><a href="/load">Загрузить фотографию</a></li>
                 {% if not user %}
-                <li><a href="#modal-login" data-toggle="modal">Войти</a><li>
+                    <li><a href="#modal-login" data-toggle="modal">Войти</a><li>
                 {% else %}
-                <li>{{greeting}}</li>
+                    <li><span><a href='/userpage'>Добро пожаловать, {{ user.name }}</a>! (<a href="/logout">выйти</a>)</span></li>
                 {% endif %}
             </ul>
 

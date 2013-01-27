@@ -65,7 +65,7 @@ section{
     padding-top: 10px;
 }
 .well{
-    background-color: rgb(161, 199, 255);
+    background-color: rgb(66, 87, 117);
 }
 
 /*html {*/
@@ -75,3 +75,16 @@ section{
     /*-o-background-size: cover;*/
     /*background-size: cover;*/
 /*}*/
+
+.well > a, li > a{
+    color: rgb(184, 227, 248);
+}
+.well > a:hover, li > a:hover{
+    color: rgb(255, 255, 255)
+}
+
+.dl-horizontal > dd:after {
+    display: table;
+    content: "";
+    clear: both;
+}

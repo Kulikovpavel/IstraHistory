@@ -7,7 +7,7 @@
     <script>
         $(document).ready(function() {
             $('#myTags').tagit({
-                availableTags: {{ tags_list }},
+                availableTags: {{ tags_list|safe }},
                 allowSpaces: true
             })
         });
@@ -24,9 +24,9 @@
 
         <form class="form-horizontal" action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
             <div class="control-group">
-                <label class="control-label" for="title" >Название</label>
+                <label class="control-label" for="title" >Название*</label>
                 <div class="controls">
-                    <input type="text" name="title" id="title" placeholder="снимок сделан на празновании Дня Победы">
+                    <input type="text" size='40' name="title" id="title" placeholder="снимок сделан на празновании Дня Победы">
                 </div>
             </div>
             <div class="control-group">
@@ -46,6 +46,21 @@
 
                 <div class="controls">
                     <input  id="myTags" name="tags" type="text">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="description">Описание</label>
+
+                <div class="controls">
+                    <textarea  id="description" name="description" size='40' type="text" placeholder="При каких обстоятельствах был сделан снимок"></textarea>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="source">Источник</label>
+
+                <div class="controls">
+                    <input  id="source" name="source" size='40' type="text" placeholder="Источник снимка, откуда взят снимок, домашний альбом, музей, сайт или другое">
                 </div>
             </div>
 

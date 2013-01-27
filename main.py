@@ -22,7 +22,7 @@ import sys # models import
 sys.path.append('/models')
 from models import *
 
-jinja_environment = jinja2.Environment(
+jinja_environment = jinja2.Environment(autoescape=True,
     loader=jinja2.FileSystemLoader("templates"))
 
 #upload_url = blobstore.create_upload_url('/upload')
@@ -116,6 +116,8 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
 #        if not image_type:
 #            self.redirect('/')
         title = self.request.get('title').replace('\\','')
+        description = self.request.get('description').replace('\\','')
+        source = self.request.get('source').replace('\\','')
 
         logging.debug(self.request)
         year = int(self.request.get('year'))
@@ -139,12 +141,14 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
                               thumb = images.get_serving_url(key, size = 75),
                               user = self.user,
                               title = title,
+                              description = description,
+                              source = source,
                               year = year,
                               tags = tags,
                               coordinates = coordinates,
                               direction = direction)
             picture.put()
-
+            memcache.set('picture_'+str(picture.key().id()),picture)
             self.tags_update(tags)
             self.pictures_update()
 
@@ -283,10 +287,14 @@ class PicturePage(HistoryHandler):
             picture.delete()
             self.pictures_update()
         self.redirect('/userpage')
+
     def get(self, id):
         id =  int(urllib.unquote(id))
-        picture = Picture.get_by_id(id)
+        picture = memcache.get("picture_" + str(id))
+        if not picture:
+            picture = Picture.get_by_id(id)
         if picture:
+            memcache.set("picture_" + str(id), picture)
             template = jinja_environment.get_template('picture.html')
             self.template_values['picture'] = picture
             self.response.out.write(template.render(self.template_values))

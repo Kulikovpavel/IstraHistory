@@ -32,7 +32,8 @@
     <!-- SLIDER-->
     <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 
-    <script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
+{#    <script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>#}
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
     <script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
     <script src="../js/bootstrap-image-gallery.min.js"></script>
     <script src="../js/main.js"></script>
@@ -102,11 +103,12 @@
     </div>
 </div>
 
-    {% include 'login-register-modal.html' %}
+
 
     {%  include 'yandex_clusters.html' %}
 {% endblock %}
 
+{% include 'login-register-modal.html' %}
 {% include 'footer.html' %}
 
 </body>
