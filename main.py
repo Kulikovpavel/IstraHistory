@@ -85,15 +85,15 @@ class HistoryHandler(webapp2.RequestHandler):
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
 
-        if self.user:
-            self.greeting = (u"<span><a href='userpage'>Добро пожаловать, %s</a>! (<a href=\"%s\">выйти</a><span>)" %
-                        (self.user.name, self.logout_url))
-
-        else:
-            self.greeting = (u"<a href=\"%s\">Войдите или зарегистрируйтесь</a>" %
-                        self.login_url)
+#        if self.user:
+#            self.greeting = (u"<span><a href='userpage'>Добро пожаловать, %s</a>! (<a href=\"%s\">выйти</a><span>)" %
+#                        (self.user.name, self.logout_url))
+#
+#        else:
+#            self.greeting = (u"<a href=\"%s\">Войдите или зарегистрируйтесь</a>" %
+#                        self.login_url)
         self.template_values = {
-            'greeting': self.greeting,
+#            'greeting': self.greeting,
             'url': 'url',
             'url_linktext': 'url_linktext',
             'upload_url': self.upload_url,
