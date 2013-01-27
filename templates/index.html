@@ -67,9 +67,9 @@
             <p>Последние фотографии</p>
             <div id="gallery" data-toggle="modal-gallery" data-target="#modal-gallery">
                 {%for picture in pictures%}
-                    <a rel="gallery"  href="{{picture.link}}" title="{{picture.title}}"><img src="{{picture.thumb}}"></a>
+                    <a data-gallery="gallery"  data-download='/picture/{{ picture.key().id() }}' href="{{picture.link}}" title="{{picture.title}}"><img src="{{picture.thumb}}"></a>
                 {% endfor %}
-{#                data-download='/picture/{{ picture.key.id }}'#}
+
             </div>
         </div>
     </div>
@@ -86,7 +86,7 @@
 
         <a class="btn modal-download" target="_blank">
             <i class="icon-download"></i>
-            <span>Загрузить</span>
+            <span>Подробности</span>
         </a>
 {#        <a class="btn" href="/picture">Подробности</a>#}
         <a class="btn btn-success modal-play modal-slideshow" data-slideshow="5000">
