@@ -38,7 +38,7 @@ class User(db.Model):
 
 class Picture(db.Model):
     title = db.StringProperty()
-    description = db.StringProperty(multiline=True)
+    description = db.TextProperty()
     source = db.StringProperty()
     blob_key = blobstore.BlobReferenceProperty(blobstore.BlobKey, required=True)
     link = db.StringProperty()

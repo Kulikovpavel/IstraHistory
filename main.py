@@ -25,6 +25,12 @@ from models import *
 jinja_environment = jinja2.Environment(autoescape=True,
     loader=jinja2.FileSystemLoader("templates"))
 
+# add filters for description tag
+def nl2br(value):
+    return value.replace('\n','<br>\n<br>\n')
+
+jinja_environment.filters['nl2br'] = nl2br
+
 #upload_url = blobstore.create_upload_url('/upload')
 
 class HistoryHandler(webapp2.RequestHandler):
@@ -297,6 +303,10 @@ class PicturePage(HistoryHandler):
             memcache.set("picture_" + str(id), picture)
             template = jinja_environment.get_template('picture.html')
             self.template_values['picture'] = picture
+            tags = memcache.get("picture_tags_"+str(id))
+            if tags is None:
+                tags = [Tag.all().filter('title =', x).get() for x in picture.tags]
+            self.template_values['tags'] = tags
             self.response.out.write(template.render(self.template_values))
         else:
             self.redirect('/')
