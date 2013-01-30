@@ -27,7 +27,10 @@ jinja_environment = jinja2.Environment(autoescape=True,
 
 # add filters for description tag
 def nl2br(value):
-    return value.replace('\n','<br>\n<br>\n')
+    if hasattr(value, 'replace'):
+        return value.replace('\n','<br>\n<br>\n')
+    else:
+        return ""
 
 jinja_environment.filters['nl2br'] = nl2br
 
@@ -143,16 +146,16 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
             key = blob_info.key()
 #            print tags
             picture = Picture(blob_key = key ,
-                              link = images.get_serving_url(key, size = 0),
-                              thumb = images.get_serving_url(key, size = 75),
-                              user = self.user,
-                              title = title,
-                              description = description,
-                              source = source,
-                              year = year,
-                              tags = tags,
-                              coordinates = coordinates,
-                              direction = direction)
+                link = images.get_serving_url(key, size = 0),
+                thumb = images.get_serving_url(key, size = 75),
+                user = self.user,
+                title = title,
+                description = description,
+                source = source,
+                year = year,
+                tags = tags,
+                coordinates = coordinates,
+                direction = direction)
             picture.put()
             memcache.set('picture_'+str(picture.key().id()),picture)
             self.tags_update(tags)
@@ -299,15 +302,22 @@ class PicturePage(HistoryHandler):
         picture = memcache.get("picture_" + str(id))
         if not picture:
             picture = Picture.get_by_id(id)
+        comments = memcache.get('comments_' + str(id))
+        if not comments:
+            comments = picture.comments.fetch(1000)
         if picture:
             memcache.set("picture_" + str(id), picture)
+            memcache.set('comments_' + str(id), comments)
             template = jinja_environment.get_template('picture.html')
             self.template_values['picture'] = picture
             tags = memcache.get("picture_tags_"+str(id))
             if tags is None:
                 tags = [Tag.all().filter('title =', x).get() for x in picture.tags]
             self.template_values['tags'] = tags
+            self.template_values['comments'] = comments
+
             self.response.out.write(template.render(self.template_values))
+
         else:
             self.redirect('/')
 
@@ -350,6 +360,98 @@ class PicturesAPI(webapp2.RequestHandler):
                            for x in data if x.coordinates])
         self.response.out.write(data)
 
+class CommentHandler(HistoryHandler):
+    def post(self):
+        owner_id = self.request.get('owner', default_value='1')
+        picture_id = self.request.get('picture_id', default_value='1')
+        text = self.request.get('text')
+
+
+#        try:
+        owner = Comment.get_by_id(int(owner_id))
+#        except:
+#            owner = None
+#            logging.debug("no owner")
+
+        picture = Picture.get_by_id(int(picture_id))
+        if self.user and picture:
+            comment = Comment(user=self.user,
+                              picture=picture,
+                              text=text,
+                              )
+            if owner:
+                comment.owner = owner
+            comment.put()
+            memcache.set('comments_'+picture_id,picture.comments.fetch(1000))
+        else:
+            self.redirect('/login')
+
+        self.redirect('/picture/'+picture_id)
+
+
+class PictureEditPage(HistoryHandler):
+    def get(self,id):
+        id =  int(urllib.unquote(id))
+        picture = memcache.get("picture_" + str(id))
+        if not picture:
+            picture = Picture.get_by_id(id)
+
+        if self.user.key() <> picture.user.key():
+            self.redirect('/login')
+
+        self.template_values['picture'] = picture
+        template = jinja_environment.get_template('picture_edit.html')
+
+        tags_data = memcache.get('tags_all')
+        if tags_data is  None:
+            tags_data = Tag.all().order('-count').fetch(30)
+            memcache.set('tags_all', tags_data)
+
+        self.template_values['tags_list'] = ("["+''.join(["'"+x.title+"'," for x in tags_data if x.title])+"]").replace('\\','')
+        self.template_values['tags'] = ("["+''.join(["'"+str(x)+"'," for x in picture.tags])+"]").replace('\\','')
+        self.response.out.write(template.render(self.template_values))
+
+    def post(self,id):
+        id =  int(urllib.unquote(id))
+        picture = memcache.get("picture_" + str(id))
+        if not picture:
+            picture = Picture.get_by_id(id)
+        if self.user.key() <> picture.user.key():
+            self.redirect('/login')
+
+        title = self.request.get('title').replace('\\','')
+        description = self.request.get('description').replace('\\','')
+        source = self.request.get('source').replace('\\','')
+
+        year = int(self.request.get('year'))
+        tags = list(self.request.get('tags').lower().replace('\\','').replace("'",'').split(','))  # теги в нижний регистр, разделяем по запятой и в лист
+
+        coordinates = self.request.get('coordinates')
+        direction = self.request.get('direction')
+        if not coordinates:
+            coordinates = '55.914125,36.860562' # center of Istra if no coords
+        if direction:
+            direction = int(direction)
+        else:
+            direction = 9
+
+
+        picture.title = title
+        picture.description = description
+        picture.source = source
+        picture.year = year
+        picture.tags = tags
+        picture.coordinates = coordinates
+        picture.direction = direction
+        picture.save()
+        memcache.set('picture_'+str(picture.key().id()),picture)
+        self.tags_update(tags)
+        self.pictures_update()
+
+        # self.redirect(images.get_serving_url(key))
+        # self.redirect('/serve/%s' %key )
+        self.redirect('/picture/'+str(id))
+
 
 
 
@@ -364,6 +466,8 @@ app = webapp2.WSGIApplication([
     ('/register',RegisterHandler),
     ('/logout',Logout),
     ('/picture/(\d+)', PicturePage),
+    ('/picture/edit/(\d+)', PictureEditPage),
     ('/ulogin', ULoginHandler),
-    ('/pictures_api',PicturesAPI)
+    ('/pictures_api', PicturesAPI),
+    ('/comment', CommentHandler)
 ], debug=True)

@@ -1,0 +1,132 @@
+{% extends "index.html" %}
+{% block body %}
+
+    <!-- TAGS-->
+    <script src="/js/tag-it.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#myTags').tagit({
+                availableTags: {{ tags_list|safe }},
+                allowSpaces: true,
+
+            })
+        });
+    </script>
+
+
+    <div class="container">
+        <form class="form-horizontal" action="/picture/edit/{{ picture.key().id() }}" method="POST" enctype="multipart/form-data">
+            <div class="control-group">
+                <label class="control-label" for="title"  >Название*</label>
+                <div class="controls">
+                    <input type="text" size='40' name="title" id="title" value='{{ picture.title }}' placeholder="снимок сделан на празновании Дня Победы">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="file">Фото</label>
+                <div class="controls">
+                    <img src='{{ picture.thumb }}' alt='{{ picture.title }}'>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="year">Год снимка</label>
+                <div class="controls">
+                    <input type="number" name="year" id="year" placeholder="1945" value="{{ picture.year }}">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="tagit-new">Теги, например "Истра, монастырь"</label>
+
+                <div class="controls">
+                    <input  id="myTags" name="tags" type="text" value="{{ picture.tags|join(',')}}">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="description">Описание</label>
+
+                <div class="controls">
+                    <textarea  id="description" name="description"  placeholder="При каких обстоятельствах был сделан снимок">{{ picture.description |nl2br|safe }}</textarea>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="source">Источник</label>
+
+                <div class="controls">
+                    <input  id="source" name="source" size='40' type="text" value='{{ picture.source }}' placeholder="Источник снимка, откуда взят снимок, домашний альбом, музей, сайт или другое">
+                </div>
+            </div>
+
+            <div class='control-group'>
+                <div class="controls">
+                    <div id="map" style="width: 600px; height: 400px"></div>
+
+                    <input class='hidden' id="coordinates" name="coordinates" value='{{ picture.coordinates }}'>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <input class = "btn btn-large btn-success" type="submit" name="submit" value="Обновить">
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+
+    <script type="text/javascript">
+        ymaps.ready(init);
+        var myMap;
+
+        function init(){
+            myMap = new ymaps.Map ("map", {
+                center: {{ picture.coordinates }},
+                zoom: 10,
+                behaviors: ['default', 'scrollZoom']
+            },{
+                balloonMaxWidth: 200
+            });
+
+            myMap.controls
+                // Кнопка изменения масштаба
+                    .add('zoomControl')
+                // Список типов карты
+                    .add('typeSelector')
+                // Кнопка изменения масштаба - компактный вариант
+                // Расположим её справа
+                    .add('smallZoomControl', { right: 5, top: 75 })
+                // Стандартный набор кнопок
+                    .add('mapTools');
+
+
+            myMap.events.add('click', function (e) {
+                var coords = e.get('coordPosition');
+                var selector = '<select id="direction" name="direction" width="100">' +
+                        '<option value="9">неизвестно</option>' +
+                        '<option value="1">север</option>' +
+                        '<option value="2">северо-запад</option>' +
+                        '<option value="3">запад</option>' +
+                        '<option value="4">юго-запад</option>' +
+                        '<option value="5">юг</option>' +
+                        '<option value="6">юго-восток</option>' +
+                        '<option value="7">восток</option>' +
+                        '<option value="8">северо-восток</option>' +
+                        '</select>';
+                myMap.balloon.open(coords, {
+                    contentHeader: 'Точка фотографии',
+                    contentBody: '<p>Выберите направление снимка</p>'+selector,
+                    contentFooter: '<sup>Точка установлена верно?</sup>'
+                    });
+
+                $('#coordinates').val( coords);
+
+            });
+            myMap.balloon.events.add('close', function (e) {
+                $('#coordinates').val('');
+            });
+        }
+    </script>
+
+{% endblock %}

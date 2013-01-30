@@ -61,3 +61,9 @@ class Picture(db.Model):
 class Tag(db.Model):
     title = db.StringProperty()
     count = db.IntegerProperty()
+
+class Comment(db.Model):
+    text = db.TextProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    picture = db.ReferenceProperty(Picture, collection_name='comments')
+    owner = db.SelfReferenceProperty(collection_name='childs')

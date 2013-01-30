@@ -6,6 +6,7 @@
                 <a href="/picture/{{picture.key().id()}}" title="{{picture.title}}" ><img src="{{picture.thumb}}"></a>
                 <br><br>
                 <form action='/picture/{{ picture.key().id() }}?action=delete' method="post" > <input class='btn' type="submit" value='Удалить'></form>
+                <a href='/picture/edit/{{ picture.key().id() }}' method="get" > <input class='btn' type="submit" value='Изменить'></form>
             </div>
 
 
