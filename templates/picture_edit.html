@@ -1,16 +1,19 @@
 {% extends "index.html" %}
 {% block body %}
 
-    <!-- TAGS-->
+    <link rel='stylesheet' href='/css/bootstrap-wysihtml5.css'>
     <script src="/js/tag-it.min.js"></script>
+    <script src="/js/wysihtml5-0.3.0.min.js"></script>
+    <script src='/js/bootstrap-wysihtml5.js'></script>
+    <script src="/js/bootstrap-wysihtml5.ru-RU.js"></script>
 
     <script>
         $(document).ready(function() {
             $('#myTags').tagit({
                 availableTags: {{ tags_list|safe }},
-                allowSpaces: true,
-
+                allowSpaces: true
             })
+            $('#description').wysihtml5({locale: "ru-RU"});
         });
     </script>
 
@@ -26,7 +29,7 @@
             <div class="control-group">
                 <label class="control-label" for="file">Фото</label>
                 <div class="controls">
-                    <img src='{{ picture.thumb }}' alt='{{ picture.title }}'>
+                    <img id="file" src='{{ picture.thumb }}' alt='{{ picture.title }}'>
                 </div>
             </div>
             <div class="control-group">
@@ -47,7 +50,7 @@
                 <label class="control-label" for="description">Описание</label>
 
                 <div class="controls">
-                    <textarea  id="description" name="description"  placeholder="При каких обстоятельствах был сделан снимок">{{ picture.description |nl2br|safe }}</textarea>
+                    <textarea  id="description" name="description" class='span12' rows='20' placeholder="При каких обстоятельствах был сделан снимок">{{ picture.description |nl2br|safe }}</textarea>
                 </div>
             </div>
             <div class="control-group">

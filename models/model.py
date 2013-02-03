@@ -67,3 +67,4 @@ class Comment(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     picture = db.ReferenceProperty(Picture, collection_name='comments')
     owner = db.SelfReferenceProperty(collection_name='childs')
+    user = db.ReferenceProperty(User,required = True,  collection_name='comments')

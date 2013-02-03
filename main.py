@@ -28,7 +28,7 @@ jinja_environment = jinja2.Environment(autoescape=True,
 # add filters for description tag
 def nl2br(value):
     if hasattr(value, 'replace'):
-        return value.replace('\n','<br>\n<br>\n')
+        return value.replace('\n','<br>\n')
     else:
         return ""
 
@@ -408,7 +408,7 @@ class PictureEditPage(HistoryHandler):
             memcache.set('tags_all', tags_data)
 
         self.template_values['tags_list'] = ("["+''.join(["'"+x.title+"'," for x in tags_data if x.title])+"]").replace('\\','')
-        self.template_values['tags'] = ("["+''.join(["'"+str(x)+"'," for x in picture.tags])+"]").replace('\\','')
+        self.template_values['tags'] = ("["+''.join(["'"+x+"'," for x in picture.tags])+"]").replace('\\','')
         self.response.out.write(template.render(self.template_values))
 
     def post(self,id):

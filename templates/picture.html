@@ -33,16 +33,24 @@
                 </dd>
             </dl>
             <hr>
-            <div>
-            {% for comment in comments %}
-                <div>{{ comment.text }}</div>
-            {% endfor %}
-            </div>
+
+            <dl class="dl-horizontal">
+                <dt>Комментарии</dt>
+                <dd>
+                    {% for comment in comments %}
+                    <div>{{ comment.text|nl2br|safe }} ( добавил {{ comment.user.name }} )</div>
+                    {% endfor %}
+                </dd>
+            </dl>
+
+
+
+
             <form class="form-horizontal" action="/comment?" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="picture_id" value="{{ picture.key().id() }}" />
                 <input type="hidden" name="owner" value="1" />
                 <div class="control-group">
-                    <label class="control-label" for="text" >Комментарий</label>
+                    <label class="control-label" for="text" >Добавить комментарий</label>
                     <div class="controls">
                         <textarea name="text" id="text" placeholder="Комментарий"></textarea>
                     </div>

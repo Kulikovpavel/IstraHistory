@@ -1,8 +1,12 @@
 {% extends "index.html" %}
 {% block body %}
 
-    <!-- TAGS-->
-    <script src="../js/tag-it.min.js"></script>
+
+    <link rel='stylesheet' href='/css/bootstrap-wysihtml5.css'>
+    <script src="/js/tag-it.min.js"></script>
+    <script src="/js/wysihtml5-0.3.0.min.js"></script>
+    <script src='/js/bootstrap-wysihtml5.js'></script>
+    <script src="/js/bootstrap-wysihtml5.ru-RU.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -10,6 +14,7 @@
                 availableTags: {{ tags_list|safe }},
                 allowSpaces: true
             })
+            $('#description').wysihtml5({locale: "ru-RU"});
         });
     </script>
 
@@ -53,7 +58,7 @@
                 <label class="control-label" for="description">Описание</label>
 
                 <div class="controls">
-                    <textarea  id="description" name="description" size='40' type="text" placeholder="При каких обстоятельствах был сделан снимок"></textarea>
+                    <textarea  class='span12' id="description" cols='80' rows='10' name="description" placeholder="При каких обстоятельствах был сделан снимок"></textarea>
                 </div>
             </div>
             <div class="control-group">
