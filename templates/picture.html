@@ -14,7 +14,7 @@
                 <dd>{{ picture.year }}</dd>
                 <dt>Теги</dt>
                 <dd>
-                    {% for tag in tags if tag!="" %}
+                    {% for tag in tags if tag %}
                     (<a href='/?tag={{ tag.key().id() }}'>{{ tag.title }}</a>)
                     {% endfor %}
                 </dd>

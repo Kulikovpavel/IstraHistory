@@ -1,9 +1,18 @@
 {% extends "index.html" %}
 {% block body %}
-    <div>
-        <a href="http://www.etomesto.ru/map-gorihvostov/?find=1&point=1&x=36.865335&y=55.914453" target="_blank">Другие исторические карты района</a>(переключение карт в нижнем левом углу)
+    <div class="container-fluid">
+        <div class='row-fluid'>
+            <div class='span12 well'>
+                <div align='center'>
+                    <a href="http://www.etomesto.ru/map-gorihvostov/?find=1&point=1&x=36.865335&y=55.914453" target="_blank">Другие исторические карты района</a> (переключение карт в нижнем левом углу)
+                </div>
+                <div class='zoom' align='center'>
+                    <table border=0 cellspacing=1 cellpadding=0 width=600 bgcolor=black><tr><td bgcolor=white><iframe src="http://etomesto.ru/view.php?map=karty-shuberta&x=36.865335&y=55.914453" name=etomesto width=600 height=600 frameborder=0 vspace=0 hspace=0 marginwidth=0 marginheight=0 scrolling=no></iframe></td></tr><tr><td align=center><a href=http://etomesto.ru/map-karty-shuberta/><font color=white size=1>Карта Шуберта Московской губернии (области) - 2 версты, карта 1860 года</font></a></td></tr></table>
+                    <table border=0 cellspacing=1 cellpadding=0 width=600 bgcolor=black><tr><td bgcolor=white><iframe src="http://etomesto.ru/view.php?map=gorihvostov&x=36.875733&y=55.916257" name=etomesto  width=600 height=600 frameborder=0 vspace=0 hspace=0 marginwidth=0 marginheight=0 scrolling=no></iframe></td></tr><tr><td align=center><a href=http://etomesto.ru/map-gorihvostov/><font color=white size=1>Географическая Карта Московской Провинции Горихвостова, карта 1774 года</font></a></td></tr></table>
+                    <table border=0 cellspacing=1 cellpadding=0 width=600 bgcolor=black><tr><td bgcolor=white><iframe src="http://etomesto.ru/view.php?map=mosobl1931_18&x=36.875733&y=55.916257" name=etomesto width=600 height=600 frameborder=0 vspace=0 hspace=0 marginwidth=0 marginheight=0 scrolling=no></iframe></td></tr><tr><td align=center><a href=http://etomesto.ru/map-mosobl1931_18/><font color=white size=1>Московская область, Истра (Воскресенск), карта 1931 года</font></a></td></tr></table>
+                </div>
+            </div>
+        </div>
     </div>
-    <table border=0 cellspacing=1 cellpadding=0 width=600 bgcolor=black><tr><td bgcolor=white><iframe src="http://etomesto.ru/view.php?map=karty-shuberta&x=36.865335&y=55.914453" name=etomesto width=600 height=600 frameborder=0 vspace=0 hspace=0 marginwidth=0 marginheight=0 scrolling=no></iframe></td></tr><tr><td align=center><a href=http://etomesto.ru/map-karty-shuberta/><font color=white size=1>Карта Шуберта Московской губернии (области) - 2 версты</font></a></td></tr></table>
-
 
 {% endblock %}
