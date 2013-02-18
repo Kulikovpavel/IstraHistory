@@ -456,7 +456,10 @@ class PictureEditPage(HistoryHandler):
         self.redirect('/picture/'+str(id))
 
 
-
+class OldMapsHandler(HistoryHandler):
+    def get(self):
+        template = jinja_environment.get_template('oldmaps.html')
+        self.response.out.write(template.render(self.template_values))
 
 
 app = webapp2.WSGIApplication([
@@ -472,5 +475,6 @@ app = webapp2.WSGIApplication([
     ('/picture/edit/(\d+)', PictureEditPage),
     ('/ulogin', ULoginHandler),
     ('/pictures_api', PicturesAPI),
-    ('/comment', CommentHandler)
+    ('/comment', CommentHandler),
+    ('/oldmaps', OldMapsHandler),
 ], debug=True)
