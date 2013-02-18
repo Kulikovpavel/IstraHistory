@@ -68,10 +68,10 @@
             {% include 'rightbar.html' %}
         </div>
         <div class='span1 well'>
-            <p>Последние фотографии</p>
             <div id="gallery" data-toggle="modal-gallery" data-target="#modal-gallery">
                 {%for picture in pictures%}
                     <a data-gallery="gallery"  data-download='/picture/{{ picture.key().id() }}' href="{{picture.link}}" title="{{picture.title}}"><img src="{{picture.thumb}}"></a>
+                    <hr>
                 {% endfor %}
 
             </div>

@@ -129,7 +129,10 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
         source = self.request.get('source').replace('\\','')
 
         logging.debug(self.request)
-        year = int(self.request.get('year'))
+        try:
+            year = int(self.request.get('year'))
+        except:
+            year = 1945;
         tags = list(self.request.get('tags').lower().replace('\\','').replace("'",'').split(','))  # теги в нижний регистр, разделяем по запятой и в лист
 
         coordinates = self.request.get('coordinates')
