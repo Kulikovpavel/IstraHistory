@@ -462,6 +462,12 @@ class OldMapsHandler(HistoryHandler):
         self.response.out.write(template.render(self.template_values))
 
 
+class ChangesHandler(HistoryHandler):
+    def get(self):
+        template = jinja_environment.get_template('changes.html')
+        self.response.out.write(template.render(self.template_values))
+
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/userpage', UserPage),
@@ -477,4 +483,5 @@ app = webapp2.WSGIApplication([
     ('/pictures_api', PicturesAPI),
     ('/comment', CommentHandler),
     ('/oldmaps', OldMapsHandler),
+    ('/changes', ChangesHandler),
 ], debug=True)
