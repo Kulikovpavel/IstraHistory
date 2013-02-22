@@ -34,12 +34,18 @@ def nl2br(value):
 
 jinja_environment.filters['nl2br'] = nl2br
 
-#upload_url = blobstore.create_upload_url('/upload')
 
 class HistoryHandler(webapp2.RequestHandler):
     def pictures_update(self):
         data = Picture.all().order('-created').fetch(300)
         memcache.set('pictures_all', data)
+
+    def get(self):
+        self.response.headers.add_header('content-type', 'application/json', charset='utf-8')
+        upload_url = blobstore.create_upload_url('/upload')
+        data = json.dumps({'url': upload_url})
+        self.response.out.write(data)
+
     def tags_update(self, tags):
         for tag in tags:
             if tag:
@@ -88,24 +94,15 @@ class HistoryHandler(webapp2.RequestHandler):
         self.login_url = '/login'
         self.logout_url = '/logout'
 
-        self.upload_url = blobstore.create_upload_url('/upload')
         webapp2.RequestHandler.initialize(self, *a, **kw)
         self.domain_url = self.request.host_url
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
 
-#        if self.user:
-#            self.greeting = (u"<span><a href='userpage'>Добро пожаловать, %s</a>! (<a href=\"%s\">выйти</a><span>)" %
-#                        (self.user.name, self.logout_url))
-#
-#        else:
-#            self.greeting = (u"<a href=\"%s\">Войдите или зарегистрируйтесь</a>" %
-#                        self.login_url)
+
         self.template_values = {
-#            'greeting': self.greeting,
             'url': 'url',
             'url_linktext': 'url_linktext',
-            'upload_url': self.upload_url,
             'register_url': self.register_url,
             'login_url': self.login_url,
             'user': self.user,

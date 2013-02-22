@@ -88,3 +88,9 @@ section{
     content: "";
     clear: both;
 }
+.wysihtml5-toolbar a{
+    color: #333333;
+}
+.wysihtml5-toolbar a:hover{
+    color: #000000;
+}
