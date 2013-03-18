@@ -110,7 +110,7 @@ class HistoryHandler(webapp2.RequestHandler):
 
             }
         
-class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
+class UploadHandler(HistoryHandler, blobstore_handlers.BlobstoreUploadHandler ):
     def initialize(self, *a, **kw):
         blobstore_handlers.BlobstoreUploadHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
@@ -129,7 +129,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
         try:
             year = int(self.request.get('year'))
         except:
-            year = 1945;
+            year = 1945
         tags = list(self.request.get('tags').lower().replace('\\','').replace("'",'').split(','))  # теги в нижний регистр, разделяем по запятой и в лист
 
         coordinates = self.request.get('coordinates')
@@ -157,7 +157,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler, HistoryHandler):
                 coordinates = coordinates,
                 direction = direction)
             picture.put()
-            memcache.set('picture_'+str(picture.key().id()),picture)
+            memcache.set('picture_' + str(picture.key().id()),picture)
             self.tags_update(tags)
             self.pictures_update()
 
@@ -217,10 +217,12 @@ class RegisterHandler(HistoryHandler):
             self.login(u)
             self.redirect('/')
 
+
 class Logout(HistoryHandler):
     def get(self):
         self.logout()
         self.redirect('/')
+
 
 class MainPage(HistoryHandler):
     def get(self):
@@ -229,26 +231,23 @@ class MainPage(HistoryHandler):
         if tag_id:
             tag = Tag.get_by_id(int(tag_id))
 
-
-
         if tag:
             mem_string='picture_tag_'+str(tag_id)
             data = memcache.get(mem_string)
-            if data is  None:
+            if data is None:
 
                 data = Picture.all().filter('tags =',tag.title)
                 memcache.set(mem_string, data)
         else:
             data = memcache.get('pictures_all')
-            if data is  None:
+            if data is None:
                 self.pictures_update()
                 data = memcache.get('pictures_all')
-        
         
         self.template_values['pictures'] = data
 
         tags_data = memcache.get('tags_all')
-        if tags_data is  None:
+        if tags_data is None:
             tags_data = Tag.all().order('-count').fetch(30)
             memcache.set('tags_all', tags_data)
 
@@ -256,7 +255,8 @@ class MainPage(HistoryHandler):
         self.template_values['tags_list'] = [x.title for x in tags_data]
         template = jinja_environment.get_template('index.html')
         self.response.out.write(template.render(self.template_values))
-    
+
+
 class UserPage(HistoryHandler):
     def get(self):
         if self.user:
@@ -266,11 +266,10 @@ class UserPage(HistoryHandler):
         else:
             self.redirect('/login')
 
+
 class LoadPage(HistoryHandler):
     def get(self):
         if self.user:
-
-
             tags_data = memcache.get('tags_all')
             if tags_data is  None:
                 tags_data = Tag.all().order('-count').fetch(30)
@@ -291,14 +290,14 @@ class PicturePage(HistoryHandler):
         action = self.request.get('action')
         id = int(urllib.unquote(id))
         picture = Picture.get_by_id(id)
-        if action=='delete' and picture and picture.user.key() == self.user.key():
+        if action == 'delete' and picture and picture.user.key() == self.user.key():
             self.tags_delete(picture.tags) # update Tags, -1 count or delete at all
             picture.delete()
             self.pictures_update()
         self.redirect('/userpage')
 
     def get(self, id):
-        id =  int(urllib.unquote(id))
+        id = int(urllib.unquote(id))
         picture = memcache.get("picture_" + str(id))
         if not picture:
             picture = Picture.get_by_id(id)
@@ -336,10 +335,10 @@ class ULoginHandler(HistoryHandler):
             email = ulogin['email']
 
             user = User.by_email(ulogin['email'])
-            if user:# if user is found - login with it
+            if user:  # if user is found - login with it
                 self.login(user)
 
-            else: # else create new User
+            else:  # else create new User
                 username = ulogin['first_name'] + ' ' + ulogin['last_name']# gets "Ivan Ivanov" string for name
                 chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
                 password = ''.join(random.choice(chars) for _ in range(10))
@@ -412,7 +411,7 @@ class PictureEditPage(HistoryHandler):
         self.response.out.write(template.render(self.template_values))
 
     def post(self,id):
-        id =  int(urllib.unquote(id))
+        id = int(urllib.unquote(id))
         picture = memcache.get("picture_" + str(id))
         if not picture:
             picture = Picture.get_by_id(id)
@@ -435,7 +434,6 @@ class PictureEditPage(HistoryHandler):
         else:
             direction = 9
 
-
         picture.title = title
         picture.description = description
         picture.source = source
@@ -444,13 +442,13 @@ class PictureEditPage(HistoryHandler):
         picture.coordinates = coordinates
         picture.direction = direction
         picture.save()
-        memcache.set('picture_'+str(picture.key().id()),picture)
+        memcache.set('picture_' + str(picture.key().id()),picture)
         self.tags_update(tags)
         self.pictures_update()
 
         # self.redirect(images.get_serving_url(key))
         # self.redirect('/serve/%s' %key )
-        self.redirect('/picture/'+str(id))
+        self.redirect('/picture/' + str(id))
 
 
 class OldMapsHandler(HistoryHandler):
