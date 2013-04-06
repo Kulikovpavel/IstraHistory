@@ -14,22 +14,21 @@ from helpers import *
 
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
-from google.appengine.ext import db
 from google.appengine.api import images
 from google.appengine.api import memcache
 
 
-import sys # models import
+import sys  # models import
 sys.path.append('/models')
 from models import *
 
 jinja_environment = jinja2.Environment(autoescape=True,
-    loader=jinja2.FileSystemLoader("templates"))
+                                       loader=jinja2.FileSystemLoader("templates"))
 
 # add filters for description tag
 def nl2br(value):
     if hasattr(value, 'replace'):
-        return value.replace('\n','<br>\n')
+        return value.replace('\n', '<br>\n')
     else:
         return ""
 
@@ -38,8 +37,9 @@ jinja_environment.filters['nl2br'] = nl2br
 
 class HistoryHandler(webapp2.RequestHandler):
     def pictures_update(self):
-        sleep(0.25)  # for  changes occur, else cache missed new items or deleted ones. Street magic
-        data = Picture.all().order('-created').fetch(300)
+        config = db.create_config(deadline=10, read_policy=db.EVENTUAL_CONSISTENCY)
+        # sleep(0.5)  # for  changes occur, else cache missed new items or deleted ones. Street magic
+        data = Picture.all().order('-created').fetch(300, config=config)
         memcache.set('pictures_all', data)
 
     def get(self):
@@ -56,7 +56,7 @@ class HistoryHandler(webapp2.RequestHandler):
                     tag_in_db.count += 1
                     tag_in_db.put()
                 else:
-                    tag_in_db = Tag(title = tag, count = 1)
+                    tag_in_db = Tag(title=tag, count=1)
                     tag_in_db.put()
         tags_data = Tag.all().order('-count').fetch(30)
         memcache.set('tags_all', tags_data)
@@ -67,7 +67,7 @@ class HistoryHandler(webapp2.RequestHandler):
                 tag_in_db = Tag.all().filter('title = ', tag).get()
                 if tag_in_db:
                     tag_in_db.count -= 1
-                    if tag_in_db.count<1:# delete Tags with 0 count
+                    if tag_in_db.count < 1:  # delete Tags with 0 count
                         tag_in_db.delete()
                     else:
                         tag_in_db.put()
@@ -109,8 +109,9 @@ class HistoryHandler(webapp2.RequestHandler):
             'user': self.user,
             'ulogin_url': self.domain_url+'/ulogin'
 
-            }
-        
+        }
+
+
 class UploadHandler(HistoryHandler, blobstore_handlers.BlobstoreUploadHandler ):
     def initialize(self, *a, **kw):
         blobstore_handlers.BlobstoreUploadHandler.initialize(self, *a, **kw)
