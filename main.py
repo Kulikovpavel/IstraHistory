@@ -8,6 +8,7 @@ import urllib
 import logging
 import json
 import random
+from time import sleep
 
 from helpers import *
 
@@ -37,6 +38,7 @@ jinja_environment.filters['nl2br'] = nl2br
 
 class HistoryHandler(webapp2.RequestHandler):
     def pictures_update(self):
+        sleep(0.25)  # for  changes occur, else cache missed new items or deleted ones. Street magic
         data = Picture.all().order('-created').fetch(300)
         memcache.set('pictures_all', data)
 
@@ -98,7 +100,6 @@ class HistoryHandler(webapp2.RequestHandler):
         self.domain_url = self.request.host_url
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
-
 
         self.template_values = {
             'url': 'url',
