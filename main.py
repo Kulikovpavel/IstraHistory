@@ -8,7 +8,7 @@ import urllib
 import logging
 import json
 import random
-from time import sleep
+
 
 from helpers import *
 
@@ -25,6 +25,7 @@ from models import *
 jinja_environment = jinja2.Environment(autoescape=True,
                                        loader=jinja2.FileSystemLoader("templates"))
 
+
 # add filters for description tag
 def nl2br(value):
     if hasattr(value, 'replace'):
@@ -36,10 +37,37 @@ jinja_environment.filters['nl2br'] = nl2br
 
 
 class HistoryHandler(webapp2.RequestHandler):
+
+
+    # def clone_all_with_parent(self):  # helper to fix starter design , entities was without parents
+    #     data = Picture.all().fetch(300)
+    #     for elem in data:
+    #
+    #         new_elem = self.clone_entity(elem, parent=main_key())
+    #         elem.delete()
+    #         new_elem.put()
+    #
+    # def clone_entity(self,e, **extra_args):
+    #     """Clones an entity, adding or overriding constructor attributes.
+    #
+    #     The cloned entity will have exactly the same property values as the original
+    #     entity, except where overridden. By default it will have no parent entity or
+    #     key name, unless supplied.
+    #
+    #     Args:
+    #       e: The entity to clone
+    #       extra_args: Keyword arguments to override from the cloned entity and pass
+    #         to the constructor.
+    #     Returns:
+    #       A cloned, possibly modified, copy of entity e.
+    #     """
+    #     klass = e.__class__
+    #     props = dict((k, v.__get__(e, klass)) for k, v in klass.properties().iteritems())
+    #     props.update(extra_args)
+    #     return klass(**props)
+
     def pictures_update(self):
-        config = db.create_config(deadline=10, read_policy=db.EVENTUAL_CONSISTENCY)
-        # sleep(0.5)  # for  changes occur, else cache missed new items or deleted ones. Street magic
-        data = Picture.all().order('-created').fetch(300, config=config)
+        data = Picture.all().order('-created').ancestor(main_key()).fetch(300)
         memcache.set('pictures_all', data)
 
     def get(self):
@@ -112,7 +140,7 @@ class HistoryHandler(webapp2.RequestHandler):
         }
 
 
-class UploadHandler(HistoryHandler, blobstore_handlers.BlobstoreUploadHandler ):
+class UploadHandler(HistoryHandler, blobstore_handlers.BlobstoreUploadHandler):
     def initialize(self, *a, **kw):
         blobstore_handlers.BlobstoreUploadHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
@@ -148,16 +176,17 @@ class UploadHandler(HistoryHandler, blobstore_handlers.BlobstoreUploadHandler ):
             key = blob_info.key()
 #            print tags
             picture = Picture(blob_key = key ,
-                link = images.get_serving_url(key, size = 0),
-                thumb = images.get_serving_url(key, size = 75),
-                user = self.user,
-                title = title,
-                description = description,
-                source = source,
-                year = year,
-                tags = tags,
-                coordinates = coordinates,
-                direction = direction)
+                              link = images.get_serving_url(key, size=0),
+                              thumb = images.get_serving_url(key, size=75),
+                              user = self.user,
+                              title = title,
+                              description = description,
+                              source = source,
+                              year = year,
+                              tags = tags,
+                              coordinates = coordinates,
+                              direction = direction,
+                              parent=main_key())
             picture.put()
             memcache.set('picture_' + str(picture.key().id()),picture)
             self.tags_update(tags)
@@ -290,10 +319,11 @@ class LoadPage(HistoryHandler):
 class PicturePage(HistoryHandler):
     def post(self, id):
         action = self.request.get('action')
+
         id = int(urllib.unquote(id))
-        picture = Picture.get_by_id(id)
+        picture = Picture.by_id(id)
         if action == 'delete' and picture and picture.user.key() == self.user.key():
-            self.tags_delete(picture.tags) # update Tags, -1 count or delete at all
+            self.tags_delete(picture.tags)  # update Tags, -1 count or delete at all
             picture.delete()
             self.pictures_update()
         self.redirect('/userpage')
@@ -302,7 +332,7 @@ class PicturePage(HistoryHandler):
         id = int(urllib.unquote(id))
         picture = memcache.get("picture_" + str(id))
         if not picture:
-            picture = Picture.get_by_id(id)
+            picture = Picture.by_id(id)
         comments = memcache.get('comments_' + str(id))
         if not comments:
             comments = picture.comments.fetch(1000)
@@ -311,7 +341,7 @@ class PicturePage(HistoryHandler):
             memcache.set('comments_' + str(id), comments)
             template = jinja_environment.get_template('picture.html')
             self.template_values['picture'] = picture
-            tags = memcache.get("picture_tags_"+str(id))
+            tags = memcache.get("picture_tags_" + str(id))
             if tags is None:
                 tags = [Tag.all().filter('title =', x).get() for x in picture.tags]
             self.template_values['tags'] = tags
@@ -367,14 +397,9 @@ class CommentHandler(HistoryHandler):
         picture_id = self.request.get('picture_id', default_value='1')
         text = self.request.get('text')
 
-
-#        try:
         owner = Comment.get_by_id(int(owner_id))
-#        except:
-#            owner = None
-#            logging.debug("no owner")
 
-        picture = Picture.get_by_id(int(picture_id))
+        picture = Picture.by_id(int(picture_id))
         if self.user and picture:
             comment = Comment(user=self.user,
                               picture=picture,
@@ -395,7 +420,7 @@ class PictureEditPage(HistoryHandler):
         id =  int(urllib.unquote(id))
         picture = memcache.get("picture_" + str(id))
         if not picture:
-            picture = Picture.get_by_id(id)
+            picture = Picture.by_id(id)
 
         if self.user.key() <> picture.user.key():
             self.redirect('/login')
@@ -416,7 +441,7 @@ class PictureEditPage(HistoryHandler):
         id = int(urllib.unquote(id))
         picture = memcache.get("picture_" + str(id))
         if not picture:
-            picture = Picture.get_by_id(id)
+            picture = Picture.by_id(id)
         if self.user.key() <> picture.user.key():
             self.redirect('/login')
 
@@ -448,8 +473,6 @@ class PictureEditPage(HistoryHandler):
         self.tags_update(tags)
         self.pictures_update()
 
-        # self.redirect(images.get_serving_url(key))
-        # self.redirect('/serve/%s' %key )
         self.redirect('/picture/' + str(id))
 
 

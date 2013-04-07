@@ -12,7 +12,7 @@ class User(db.Model):
 
     @classmethod
     def by_id(cls, uid):
-        return User.get_by_id(uid, parent = users_key())
+        return User.get_by_id(uid, parent=users_key())
 
     @classmethod
     def by_name(cls, name):
@@ -51,12 +51,15 @@ class Picture(db.Model):
     coordinates = db.GeoPtProperty()
     direction = db.IntegerProperty()
 
+    @classmethod
+    def by_id(cls, uid):
+        return Picture.get_by_id(uid, parent=main_key())
 
     def link_func(cls,key):
-        return images.get_serving_url(key, size = 0)
+        return images.get_serving_url(key, size=0)
 
     def thumb_func(cls,key):
-        return images.get_serving_url(key, size = 75)
+        return images.get_serving_url(key, size=75)
 
 class Tag(db.Model):
     title = db.StringProperty()
