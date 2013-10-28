@@ -151,16 +151,16 @@ class UploadHandler(HistoryHandler, blobstore_handlers.BlobstoreUploadHandler):
 #        image_type = imghdr.what(upload_files[0].filename)
 #        if not image_type:
 #            self.redirect('/')
-        title = self.request.get('title').replace('\\','')
-        description = self.request.get('description').replace('\\','')
-        source = self.request.get('source').replace('\\','')
+        title = self.request.get('title').replace('\\', '')
+        description = self.request.get('description').replace('\\', '')
+        source = self.request.get('source').replace('\\', '')
 
         logging.debug(self.request)
         try:
             year = int(self.request.get('year'))
         except:
             year = 1945
-        tags = list(self.request.get('tags').lower().replace('\\','').replace("'",'').split(','))  # теги в нижний регистр, разделяем по запятой и в лист
+        tags = list(self.request.get('tags').lower().replace('\\', '').replace("'", '').split(','))  # теги в нижний регистр, разделяем по запятой и в лист
 
         coordinates = self.request.get('coordinates')
         direction = self.request.get('direction')
@@ -231,6 +231,7 @@ class LoginHandler(HistoryHandler):
 class RegisterHandler(HistoryHandler):
     def get(self):
         pass
+
     def post(self):
         self.username = self.request.get('username')
         self.password = self.request.get('password')
@@ -263,7 +264,7 @@ class MainPage(HistoryHandler):
             tag = Tag.get_by_id(int(tag_id))
 
         if tag:
-            mem_string='picture_tag_'+str(tag_id)
+            mem_string = 'picture_tag_'+str(tag_id)
             data = memcache.get(mem_string)
             if data is None:
 
@@ -315,6 +316,7 @@ class LoadPage(HistoryHandler):
 
         else:
             self.redirect('/login')
+
 
 class PicturePage(HistoryHandler):
     def post(self, id):
@@ -417,7 +419,7 @@ class CommentHandler(HistoryHandler):
 
 class PictureEditPage(HistoryHandler):
     def get(self,id):
-        id =  int(urllib.unquote(id))
+        id = int(urllib.unquote(id))
         picture = memcache.get("picture_" + str(id))
         if not picture:
             picture = Picture.by_id(id)
